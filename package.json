@@ -1,0 +1,19 @@
+{
+    "name": "stage-profile-maker",
+    "version": "0.0.1",
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "exports": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "scripts": {
+      "build": "tsc && sass src/style/index.scss dist/style/style.css",
+      "link": "npm link"
+    },
+    "devDependencies": {
+      "typescript": "^5.6.3",
+      "sass": "^1.80.4"
+    }
+  }
+  

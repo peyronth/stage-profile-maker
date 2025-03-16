@@ -1,0 +1,19 @@
+{
+    "name": "stage-profile-maker-example",
+    "version": "0.0.1",
+    "private": true,
+    "dependencies": {
+      "stage-profile-maker": "file:../"
+    },
+    "devDependencies": {
+      "typescript": "^5.6.3",
+      "sass": "^1.80.4",
+      "lite-server": "^2.6.1",
+      "concurrently": "^9.0.1"
+    },
+    "scripts": {
+      "build": "tsc && sass src/style/index.scss dist/style/style.css",
+      "dev": "concurrently \"npm run build --watch\" \"lite-server\""
+    }
+  }
+  
