@@ -1,4 +1,32 @@
 import { createApp } from 'vue'
+
+// Vuetify
+import 'vuetify/styles'
+import { createVuetify } from 'vuetify'
+import * as components from 'vuetify/components'
+import * as directives from 'vuetify/directives'
+
+import colors from 'vuetify/util/colors'
+
+// Styles
+import './style/main.css'
+
+// Components
 import App from './App.vue'
 
-createApp(App).mount('#app')
+const vuetify = createVuetify({
+  components,
+  directives,
+  theme: {
+    themes: {
+      light: {
+        colors: {
+          primary: colors.amber.base,
+          secondary: colors.amber.darken4
+        }
+      }
+    }
+  }
+})
+
+createApp(App).use(vuetify).mount('#app')

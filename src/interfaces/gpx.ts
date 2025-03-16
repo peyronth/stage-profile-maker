@@ -53,13 +53,14 @@ export interface Track {
 export interface Point {
   lat: number;
   lon: number;
+  dist: number;
   ele: number | null;
   time: Date | null;
 }
 
 export interface Distance {
   total: number;
-  cumul: number;
+  cumul: number[];
 }
 
 export interface Elevation {

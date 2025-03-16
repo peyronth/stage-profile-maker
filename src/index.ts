@@ -1,11 +1,16 @@
-import GPXParser from './classes/GPXParser';
+import GPXHelper from './classes/GPXHelper';
+import ProfileDrawer from './classes/ProfileDrawer';
 
 export class ProfileMaker {
-  gpxParser: GPXParser;
+  gpx: GPXHelper;
+  drawer: ProfileDrawer;
 
   constructor(gpxContext: string) {
-    console.log('ProfileMaker');
-    this.gpxParser = new GPXParser(gpxContext);
-    console.log(this.gpxParser);
+    this.gpx = new GPXHelper(gpxContext);
+    this.drawer = new ProfileDrawer(gpxContext);
+  }
+
+  getHtml(): string {
+    return this.drawer.getHtml();
   }
 }

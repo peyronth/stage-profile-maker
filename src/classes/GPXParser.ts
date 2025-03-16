@@ -11,7 +11,7 @@ export default class GPXParser {
   constructor(gpxString: string) {
     const domParser = new DOMParser();
     this.xmlSource = domParser.parseFromString(gpxString, 'text/xml');
-    
+
     this.metadata = this.parseMetadata();
     this.parseWaypoints();
     this.parseRoutes();
@@ -98,7 +98,7 @@ export default class GPXParser {
         number: this.getElementValue(rte, "number"),
         type: this.getInnerHTML(this.queryDirectSelector(rte, "type")),
         link: this.parseLink(rte.querySelector('link')),
-        distance: { total: 0, cumul: 0 },
+        distance: { total: 0, cumul: [] },
         elevation: { max: 0, min: 0, pos: 0, neg: 0, avg: 0 },
         slopes: [],
         points: this.parseRoutePoints(rte),
@@ -119,12 +119,13 @@ export default class GPXParser {
       lon: parseFloat(rtept.getAttribute("lon") ?? '0'),
       ele: this.parseFloatOrNull(this.getElementValue(rtept, "ele")),
       time: this.parseDateOrNull(this.getElementValue(rtept, "time")),
+      dits: 0
     }));
   }
 
   parseTracks(): void {
     const trkElements = Array.from(this.xmlSource.querySelectorAll('trk'));
-  
+
     for (const trk of trkElements) {
       const track: Track = {
         name: this.getElementValue(trk, "name"),
@@ -134,27 +135,29 @@ export default class GPXParser {
         number: this.getElementValue(trk, "number"),
         type: this.getInnerHTML(this.queryDirectSelector(trk, "type")) ?? '',
         link: this.parseLink(trk.querySelector('link')),
-        distance: { total: 0, cumul: 0 },
+        distance: { total: 0, cumul: [] },
         elevation: { max: 0, min: 0, pos: 0, neg: 0, avg: 0 },
         slopes: [],
         points: this.parseTrackPoints(trk),
       };
-  
+
       track.distance = this.calculDistance(track.points);
       track.elevation = this.calcElevation(track.points);
       track.slopes = this.calculSlope(track.points, track.distance.cumul);
-  
+
       this.tracks.push(track);
     }
   }
-  
+
   parseTrackPoints(trk: Element): Point[] {
     const trkpts = Array.from(trk.querySelectorAll('trkpt'));
+
     return trkpts.map(trkpt => ({
       lat: parseFloat(trkpt.getAttribute("lat") ?? '0'),
       lon: parseFloat(trkpt.getAttribute("lon") ?? '0'),
       ele: this.parseFloatOrNull(this.getElementValue(trkpt, "ele")),
       time: this.parseDateOrNull(this.getElementValue(trkpt, "time")),
+      dist: 0
     }));
   }
 
@@ -179,16 +182,82 @@ export default class GPXParser {
   }
 
   calculDistance(points: Point[]): Distance {
-    //TODO: Implementation of calculDistance
-    return { total: 0, cumul: 0 };
+    let distance: Distance = { total: 0, cumul: [] };
+    let totalDistance = 0;
+    let cumulDistance = [];
+    for (let i = 0; i < points.length - 1; i++) {
+      totalDistance += this.calcDistanceBetween(points[i], points[i + 1]);
+      cumulDistance[i] = totalDistance;
+      points[i].dist = totalDistance;
+    }
+    cumulDistance[points.length - 1] = totalDistance;
+
+    distance.total = totalDistance;
+    distance.cumul = cumulDistance;
+
+    return distance;
   }
+
+  calcDistanceBetween(wpt1: { lat: number; lon: number }, wpt2: { lat: number; lon: number }): number {
+    const rad = Math.PI / 180;
+    const lat1 = wpt1.lat * rad;
+    const lat2 = wpt2.lat * rad;
+    const sinDLat = Math.sin(((wpt2.lat - wpt1.lat) * rad) / 2);
+    const sinDLon = Math.sin(((wpt2.lon - wpt1.lon) * rad) / 2);
+
+    const a = sinDLat * sinDLat + Math.cos(lat1) * Math.cos(lat2) * sinDLon * sinDLon;
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+    return 6371000 * c;
+  };
+
 
   calcElevation(points: Point[]): Elevation {
-    //TODO: Implementation of calcElevation
-    return { max: 0, min: 0, pos: 0, neg: 0, avg: 0 };
-  }
+    let dp = 0;
+    let dm = 0;
+    let ret = { max: null, min: null, pos: null, neg: null, avg: null };
 
-  calculSlope(points: Point[], cumulDistance: number): number[] {
+    // Calcul de la différence de hauteur
+    for (let i = 0; i < points.length - 1; i++) {
+      const rawNextElevation = points[i + 1].ele;
+      const rawElevation = points[i].ele;
+
+      if (rawNextElevation !== null && rawElevation !== null) {
+        const diff = rawNextElevation - rawElevation;
+
+        if (diff < 0) {
+          dm += diff;
+        } else if (diff > 0) {
+          dp += diff;
+        }
+      }
+    }
+
+    // Calcul des statistiques d'altitude
+    const elevation: number[] = [];
+    let sum = 0;
+
+    for (let i = 0, len = points.length; i < len; i++) {
+      const rawElevation = points[i].ele;
+
+      if (rawElevation !== null) {
+        const ele = rawElevation;
+        elevation.push(ele);
+        sum += ele;
+      }
+    }
+
+    ret.max = Math.max(...elevation) || null;
+    ret.min = Math.min(...elevation) || null;
+    ret.pos = Math.abs(dp) || null;
+    ret.neg = Math.abs(dm) || null;
+    ret.avg = elevation.length > 0 ? sum / elevation.length : null;
+
+    return ret;
+  };
+
+
+  calculSlope(points: Point[], cumulDistance: number[]): number[] {
     //TODO: Implementation of calculSlope
     return [];
   }
@@ -209,7 +278,7 @@ export default class GPXParser {
     if (elements.length > 1) {
       const directChildren = parent.childNodes;
 
-      for(const directChild of directChildren) {
+      for (const directChild of directChildren) {
         if (directChild.nodeName === tagName) {
           finalElement = directChild as Element;
         }
