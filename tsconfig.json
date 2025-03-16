@@ -1,14 +1,17 @@
 {
   "compilerOptions": {
-    "target": "ES6",
-    "module": "NodeNext",
-    "moduleResolution": "NodeNext",
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "Node",
     "declaration": true,
     "declarationMap": true,
-    "strict": true,
+    "strict": false,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "outDir": "./dist"
+    "outDir": "./dist",
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "noEmitOnError": false
   },
   "include": ["src/**/*"]
 }
