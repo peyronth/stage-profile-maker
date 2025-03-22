@@ -1,3 +1,4 @@
+import type { Config, Line, ProfileBody } from '../interfaces/Config';
 import GPXHelper from './GPXHelper';
 
 export default class ProfileDrawer {
@@ -6,6 +7,7 @@ export default class ProfileDrawer {
   height: number = 300;
   xScale: number;
   yScale: number;
+  cssImported: boolean = false;
 
   constructor(gpxContext: string) {
     this.gpx = new GPXHelper(gpxContext);
@@ -14,7 +16,7 @@ export default class ProfileDrawer {
     this.yScale = this.height / (this.gpx.getMaxAltitude() - this.gpx.getMinAltitude());
   }
 
-  drawSvgProfileLine(): string {
+  drawMainLine(config: Line): string {
     const points = this.gpx.getPoints();
     const minAltitude = this.gpx.getMinAltitude();
 
@@ -32,10 +34,10 @@ export default class ProfileDrawer {
       path += ` L ${x} ${y}`;
     }
 
-    return path;
+    return `<path d="${path}" stroke="${config.color}" fill="none" />`;
   }
 
-  drawSvgProfileBody(): string {
+  drawBody(config: ProfileBody): string {
     const points = this.gpx.getPoints();
     const minAltitude = this.gpx.getMinAltitude();
 
@@ -57,17 +59,61 @@ export default class ProfileDrawer {
     path += ` L 0 ${this.height}`;
 
 
-    return path;
+    return `<path d="${path}" fill="${config.color}" />`;
   }
 
+  drawEleveationGrid(config: Grid): string {
 
+  }
 
-  getHtml(): string {
+  drawProfile(config: Config): string {
+    const svgElements = [];
+    svgElements.push(this.drawBody(config.body));
+
+    if(config.mainLine) {
+      svgElements.push(this.drawMainLine(config.mainLine));
+    }
+    if(config.elevationGrid) {
+      svgElements.push(this.drawElevationGrid(config.elevationGrid));
+    }
+
+    return `<svg
+      viewBox="0 0 ${this.width} ${this.height}"
+    >
+      ${svgElements.join('')}
+    </svg>`;
+  }
+
+  getHtml(config: Config): string {
+    if(!this.cssImported) {
+      this.cssImported = true;
+      
+      // Write style
+      const style = document.createElement('style');
+      style.innerHTML = this.getCss();
+      document.head.appendChild(style);
+    }
+
     return `
-      <svg viewBox="0 0 ${this.width} ${this.height}">
-        <path d="${this.drawSvgProfileBody()}" fill="lightgray" />
-        <path d="${this.drawSvgProfileLine()}" stroke="black" fill="none" />
-      </svg>
+      <div
+        class="stage-profile-maker-container"
+      >
+        ${this.drawProfile(config)}
+      </div>
+    `;
+  }
+
+  getCss(): string {
+    return `
+      .stage-profile-maker-container {
+        width: 100%;
+        height: 400px;
+      }
+
+      .stage-profile-maker-container > svg {
+        width: 100%;
+        height: 100%;
+      }
     `;
   }
 }

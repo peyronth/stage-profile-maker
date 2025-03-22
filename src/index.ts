@@ -1,5 +1,6 @@
 import GPXHelper from './classes/GPXHelper';
 import ProfileDrawer from './classes/ProfileDrawer';
+import { Config } from './interfaces/Config';
 
 export class ProfileMaker {
   gpx: GPXHelper;
@@ -10,7 +11,7 @@ export class ProfileMaker {
     this.drawer = new ProfileDrawer(gpxContext);
   }
 
-  getHtml(): string {
-    return this.drawer.getHtml();
+  getHtml(config: Config): string {
+    return this.drawer.getHtml(config);
   }
 }

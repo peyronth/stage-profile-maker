@@ -1,4 +1,4 @@
-import { MetaData, Waypoint, Point, Route, Track, Distance, Elevation } from '../interfaces/gpx';
+import { MetaData, Waypoint, Point, Route, Track, Distance, Elevation } from '../interfaces/Gpx';
 
 export default class GPXParser {
   xmlSource: Document;
@@ -119,7 +119,7 @@ export default class GPXParser {
       lon: parseFloat(rtept.getAttribute("lon") ?? '0'),
       ele: this.parseFloatOrNull(this.getElementValue(rtept, "ele")),
       time: this.parseDateOrNull(this.getElementValue(rtept, "time")),
-      dits: 0
+      dist: 0
     }));
   }
 

@@ -1,64 +1,6 @@
-/*
-Éléments à afficher ou pas
-- Corps
-Couleur / Image de fond
-
-- Ligne principale
-Couleur
-Épaisseur
-
-- Effet 3D
-Couleur
-Width
-
-- Ligne effet 3D
-Couleur
-Épaisseur
-
-- Sprints
-PoliceForName
-PoliceForAltitude
-PoliceForDistance
-FixToTop
-LineWidth
-Icon
-Rotation
-
-- Start - Finish
-PoliceForName
-PoliceForAltitude
-PoliceForDistance
-Police
-FixToTop
-LineWidth
-Icon
-Rotation
-
-- Ligne d'altitude
-OverProfileOnly
-Dashed
-Épaisseur
-
-- Ligne de distance
-OverProfileOnly
-Dashed
-Épaisseur
-
-- Indication kilométrique
-BackgroundColor
-Police
-
-
-  -Police
-  Font
-  Taille
-  Couleur
-
-*/
-
 export interface Config {
-  body: Body;
-  mainLine: Line;
+  body: ProfileBody;
+  mainLine?: Line;
   body3D?: Body3D;
   line3D?: Line;
   sprint?: Sprint;
@@ -87,9 +29,9 @@ export interface Grid {
   interval: number;
 }
 
-export interface Body {
-  color: string;
-  image: string;
+export interface ProfileBody {
+  color?: string;
+  image?: string;
 }
 
 export interface Sprint extends Line {
@@ -101,6 +43,6 @@ export interface Sprint extends Line {
   icon?: string;
 }
 
-export interface Body3D extends Body {
+export interface Body3D extends ProfileBody {
   retreat: number;
 }

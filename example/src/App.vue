@@ -49,7 +49,7 @@
           </v-row>
           <div
             class="profile-container"
-            v-html="profile.getHtml()"
+            v-html="profile.getHtml(defaultPreset)"
             style="width: 100%; height: 400px;"
           />
         </v-col>
@@ -60,6 +60,8 @@
 
 <script lang="ts">
 import { defineComponent, onMounted, ref } from 'vue';
+
+import { defaultPreset } from './configs/presets';
 
 import { ProfileMaker } from 'stage-profile-maker';
 
@@ -78,11 +80,10 @@ export default defineComponent({
     onMounted(async () => {
       const gpx = await fetchData();
       profile.value = new ProfileMaker(gpx);
-
-      console.log(profile.value);
     });
 
     return {
+      defaultPreset,
       profile
     };
   },

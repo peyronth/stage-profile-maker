@@ -8,9 +8,6 @@ import * as directives from 'vuetify/directives'
 
 import colors from 'vuetify/util/colors'
 
-// Styles
-import './style/main.css'
-
 // Components
 import App from './App.vue'
 

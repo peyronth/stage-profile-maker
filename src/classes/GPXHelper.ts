@@ -1,4 +1,4 @@
-import { Point } from '../interfaces/gpx';
+import { Point } from '../interfaces/Gpx';
 import GPXParser from './GPXParser';
 
 export default class GPXHelper extends GPXParser {
