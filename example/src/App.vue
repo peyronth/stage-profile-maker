@@ -50,7 +50,6 @@
           <div
             class="profile-container"
             v-html="profile.getHtml(defaultPreset)"
-            style="width: 100%; height: 400px;"
           />
         </v-col>
       </v-card>

@@ -1,27 +1,37 @@
-import type { Config, Line, ProfileBody } from '../interfaces/Config';
+import type { Config, Font, Grid, Icon, Line, ProfileBody, Sprint, StartFinish } from '../interfaces/Config';
 import GPXHelper from './GPXHelper';
+
+const bodyMaskId = "body-mask";
 
 export default class ProfileDrawer {
   gpx: GPXHelper;
-  width: number = 800;
-  height: number = 300;
+  width: number = 1300;
+  height: number = 540;
   xScale: number;
   yScale: number;
+  topMargin: number;
   cssImported: boolean = false;
 
   constructor(gpxContext: string) {
     this.gpx = new GPXHelper(gpxContext);
+  }
 
-    this.xScale = this.width / this.gpx.getDistance();
-    this.yScale = this.height / (this.gpx.getMaxAltitude() - this.gpx.getMinAltitude());
+  getBottomAltitude(): number {
+    const minAltitude = this.gpx.getMinAltitude();
+    if (minAltitude < 200) {
+      return 0;
+    }
+    else {
+      return minAltitude - 200;
+    }
   }
 
   drawMainLine(config: Line): string {
     const points = this.gpx.getPoints();
-    const minAltitude = this.gpx.getMinAltitude();
+    const minAltitude = this.getBottomAltitude();
 
     // Calculer le nombre de points à utiliser
-    const maxPoints = 100;
+    const maxPoints = 2500;
     const step = Math.ceil(points.length / maxPoints);
 
     let path = `M  0 ${this.height - (points[0].ele - minAltitude) * this.yScale}`;
@@ -39,10 +49,10 @@ export default class ProfileDrawer {
 
   drawBody(config: ProfileBody): string {
     const points = this.gpx.getPoints();
-    const minAltitude = this.gpx.getMinAltitude();
+    const minAltitude = this.getBottomAltitude();
 
     // Calculer le nombre de points à utiliser
-    const maxPoints = 100;
+    const maxPoints = 2500;
     const step = Math.ceil(points.length / maxPoints);
 
     let path = `M  0 ${this.height - (points[0].ele - minAltitude) * this.yScale}`;
@@ -58,36 +68,150 @@ export default class ProfileDrawer {
     path += ` L ${this.width} ${this.height}`;
     path += ` L 0 ${this.height}`;
 
-
     return `<path d="${path}" fill="${config.color}" />`;
   }
 
-  drawEleveationGrid(config: Grid): string {
+  drawElevationGrid(config: Grid): string {
+    const gridLines: string[] = [];
+    const step = config.interval * this.yScale;
 
+    // Générer les lignes horizontales tous les `step` pixels
+    for (let y = this.height; y > 0; y -= step) {
+      gridLines.push(`<line x1="0" y1="${y}" x2="${this.width}" y2="${y}" stroke="${config.color}" stroke-width="${config.width}" />`);
+    }
+
+    return `
+      <g ${config.overProfileOnly ? `mask="url(#${bodyMaskId})` : ''}">
+        ${gridLines.join("\n")}
+      </g>
+    `;
+  }
+
+  getPointHeight(distance: number): string {
+    console.log(distance, this.gpx.getElevation(distance));
+    return this.gpx.getElevation(distance) / (this.gpx.getMaxAltitude() - this.getBottomAltitude()) * 100 + '%';
+  }
+
+  drawLine(config: Line, lineHeight: string): string {
+    return `
+    <svg
+      width="${config.width}"
+      height="${lineHeight}"
+    >
+      <line x1="0" y1="100%" x2="0" y2="0" stroke="${config.color}" stroke-width="${config.width}" />
+    </svg>`;
+  }
+
+  drawIcon(icon: Icon): string {
+    return `
+    <img
+      src="${icon.src}"
+      style="
+        width: ${icon.width}px;
+        height: ${icon.height}px;
+      "
+    />`;
+  }
+
+  drawWrite(config: Font, text: string): string {
+    return `
+    <span
+      style="
+        font-family: ${config.fontFamilly};
+        font-size: ${config.fontSize}px;
+        color: ${config.fontColor};
+        font-weight: ${config.fontWeight};
+      "
+    >
+      ${text}
+    </span>
+    `;
+  }
+
+  drawSprint(config: Sprint, name: string, distance: number, icon?: Icon): string {
+    const { color, width, fixToTop, policeForName, policeForAltitude } = config;
+
+    const lineHeight = fixToTop ? '100%' : this.getPointHeight(distance);
+
+    return `
+      <div style="
+        position: absolute;
+        left: ${distance / this.gpx.getDistance() * 100}%;
+        bottom: 0;
+        text-align: center;
+        height: 100%;
+      ">
+        <div
+          style="
+            margin-left: -100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100%;
+            justify-content: flex-end;
+            gap: 8px;
+          "
+        >
+          ${icon ? this.drawIcon(icon) : ''}
+          <div style="
+            writing-mode: vertical-lr;
+            transform: rotate(180deg);
+            display: inline;
+            display: inline-flex;
+            white-space: nowrap;
+            gap: 8px;
+          ">
+            ${policeForAltitude ? this.drawWrite(policeForAltitude, `${this.gpx.getElevation(distance)}m`) : ''} ${this.drawWrite(policeForName, name)}
+          </div>
+          ${this.drawLine({ color, width }, lineHeight)}
+        </div>
+      </div>
+    `;
+  }
+
+  drawStart(config: StartFinish): string {
+    return this.drawSprint(config, config.name, 0, config.icon);
+  }
+
+  drawFinish(config: StartFinish): string {
+    return this.drawSprint(config, config.name, this.gpx.getDistance(), config.icon);
   }
 
   drawProfile(config: Config): string {
     const svgElements = [];
-    svgElements.push(this.drawBody(config.body));
+    const bodyMaskPath = this.drawBody({ color: "white" });
 
-    if(config.mainLine) {
+    svgElements.push(this.drawBody(config.body));
+    if (config.mainLine) {
       svgElements.push(this.drawMainLine(config.mainLine));
     }
-    if(config.elevationGrid) {
+    if (config.elevationGrid) {
       svgElements.push(this.drawElevationGrid(config.elevationGrid));
     }
 
     return `<svg
       viewBox="0 0 ${this.width} ${this.height}"
     >
+      <defs>
+        <mask id="${bodyMaskId}">
+          <rect width="${this.width}" height="${this.height}" fill="black"/>
+          ${bodyMaskPath}
+        </mask>
+      </defs>
       ${svgElements.join('')}
     </svg>`;
   }
 
   getHtml(config: Config): string {
-    if(!this.cssImported) {
+    this.width = config.width;
+    this.height = config.height;
+    this.topMargin = config.topMargin;
+    this.xScale = this.width / this.gpx.getDistance();
+    this.yScale = this.height / (this.gpx.getMaxAltitude() - this.getBottomAltitude());
+
+    if (!this.cssImported) {
       this.cssImported = true;
-      
+
       // Write style
       const style = document.createElement('style');
       style.innerHTML = this.getCss();
@@ -96,18 +220,43 @@ export default class ProfileDrawer {
 
     return `
       <div
-        class="stage-profile-maker-container"
+        class="stage-profile-maker-wrapper"
       >
-        ${this.drawProfile(config)}
+        <div
+          class="stage-profile-maker-container"
+        >
+          <div class="stage-profile-maker-sprints">
+            ${config.start ? this.drawStart(config.start) : ''}
+            ${config.finish ? this.drawFinish(config.finish) : ''}
+          </div>
+          ${this.drawProfile(config)}
+        </div>
       </div>
     `;
   }
 
   getCss(): string {
     return `
+      .stage-profile-maker-wrapper {
+        padding: 16px;
+        padding-top: calc(16px + ${this.topMargin}px);
+      }
+
       .stage-profile-maker-container {
+        background-color: #f0f0f0;
+        aspect-ratio: ${this.width} / ${this.height};
+        width: auto;
+        height: 100%;
+        position: relative;
+      }
+
+      .stage-profile-maker-sprints {
+        z-index: 2;
+        height: calc(100% + ${this.topMargin}px);
         width: 100%;
-        height: 400px;
+        left: 0;
+        position: absolute;
+        bottom: 0;
       }
 
       .stage-profile-maker-container > svg {

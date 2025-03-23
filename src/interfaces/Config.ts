@@ -1,12 +1,18 @@
+import { SprintTypes } from '../enums/SprintTypes';
+
 export interface Config {
+  width: number;
+  height: number;
+  topMargin: number;
+
   body: ProfileBody;
   mainLine?: Line;
   body3D?: Body3D;
   line3D?: Line;
   sprint?: Sprint;
   location?: Sprint;
-  start?: Sprint;
-  finish?: Sprint;
+  start?: StartFinish;
+  finish?: StartFinish;
   elevationGrid?: Grid;
   distanceGrid?: Grid;
 }
@@ -15,6 +21,7 @@ export interface Font {
   fontFamilly: string;
   fontSize: number;
   fontColor: string;
+  fontWeight?: string;
 }
 
 export interface Line { 
@@ -24,7 +31,7 @@ export interface Line {
 
 export interface Grid {
   overProfileOnly: boolean;
-  dashed: boolean;
+  color: string;
   width: number;
   interval: number;
 }
@@ -40,9 +47,21 @@ export interface Sprint extends Line {
   policeForDistance?: Font;
   fixToTop: boolean;
   rotation: number;
-  icon?: string;
+  icons?: Record<SprintTypes, Icon>;
+  altitude?: number;
+}
+
+export interface StartFinish extends Sprint {
+  name: string;
+  icon?: Icon;
 }
 
 export interface Body3D extends ProfileBody {
   retreat: number;
+}
+
+export interface Icon {
+  src: string;
+  width: number;
+  height: number;
 }

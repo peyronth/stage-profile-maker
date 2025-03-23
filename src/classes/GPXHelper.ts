@@ -55,4 +55,13 @@ export default class GPXHelper extends GPXParser {
     }, []);
   }
 
+  getElevation (distance: number): number {
+    const points = this.tracks[0].points;
+    const point = points.find(p => p.dist >= distance);
+    if(point) {
+      return point.ele;
+    }
+    return 0;
+  }
+
 }
