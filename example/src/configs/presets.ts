@@ -2,8 +2,8 @@ import type { Config } from '../../../src/interfaces/Config';
 
 export const defaultPreset: Config = {
   width: 1300,
-  height: 540,
-  topMargin: 120,
+  height: 400,
+  topMargin: 400,
 
   body: {
     color: '#FEEC02',
@@ -59,5 +59,22 @@ export const defaultPreset: Config = {
       width: 28,
       height: 28
     }
+  },
+  sprint: {
+    color: "#000000",
+    width: 2,
+    dasharray: "4 4",
+    policeForName: {
+      fontFamilly: "Arial",
+      fontSize: 16,
+      fontColor: "#000000"
+    },
+    policeForAltitude: {
+      fontFamilly: "Arial",
+      fontSize: 16,
+      fontColor: "#000000"
+    },
+    fixToTop: true,
+    rotation: 90
   }
 }

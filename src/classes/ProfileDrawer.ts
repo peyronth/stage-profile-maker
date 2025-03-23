@@ -95,10 +95,22 @@ export default class ProfileDrawer {
   drawLine(config: Line, lineHeight: string): string {
     return `
     <svg
+      style="
+        flex-shrink: 0;
+        flex-grow: 0;
+      "
       width="${config.width}"
-      height="${lineHeight}"
+      height="calc(${lineHeight} - ${this.topMargin}px)"
     >
-      <line x1="0" y1="100%" x2="0" y2="0" stroke="${config.color}" stroke-width="${config.width}" />
+      <line
+        x1="0"
+        y1="100%"
+        x2="0"
+        y2="0"
+        stroke="${config.color}"
+        stroke-width="${config.width}"
+        ${config.dasharray ? `stroke-dasharray="${config.dasharray}"` : ''}
+      />
     </svg>`;
   }
 
@@ -128,7 +140,7 @@ export default class ProfileDrawer {
     `;
   }
 
-  drawSprint(config: Sprint, name: string, distance: number, icon?: Icon): string {
+  drawMarker(config: Sprint, name: string, distance: number, icon?: Icon): string {
     const { color, width, fixToTop, policeForName, policeForAltitude } = config;
 
     const lineHeight = fixToTop ? '100%' : this.getPointHeight(distance);
@@ -156,25 +168,39 @@ export default class ProfileDrawer {
           <div style="
             writing-mode: vertical-lr;
             transform: rotate(180deg);
-            display: inline;
             display: inline-flex;
             white-space: nowrap;
             gap: 8px;
+            flex-shrink: 1;
+            min-height: 0;
           ">
             ${policeForAltitude ? this.drawWrite(policeForAltitude, `${this.gpx.getElevation(distance)}m`) : ''} ${this.drawWrite(policeForName, name)}
           </div>
-          ${this.drawLine({ color, width }, lineHeight)}
+          ${this.drawLine(config, lineHeight)}
         </div>
       </div>
     `;
   }
 
   drawStart(config: StartFinish): string {
-    return this.drawSprint(config, config.name, 0, config.icon);
+    return this.drawMarker(config, config.name, 0, config.icon);
   }
 
   drawFinish(config: StartFinish): string {
-    return this.drawSprint(config, config.name, this.gpx.getDistance(), config.icon);
+    return this.drawMarker(config, config.name, this.gpx.getDistance(), config.icon);
+  }
+
+  drawSprints(config: Sprint): string {
+    const sprints = this.gpx.getWaypoints();
+    const sprintHtmls = [];
+    
+    for (const sprintDistance in sprints) {
+      const sprint = sprints[sprintDistance];
+      
+      sprintHtmls.push(this.drawMarker(config, sprint.name, +sprintDistance));
+    }
+
+    return sprintHtmls.join('');
   }
 
   drawProfile(config: Config): string {
@@ -189,7 +215,8 @@ export default class ProfileDrawer {
       svgElements.push(this.drawElevationGrid(config.elevationGrid));
     }
 
-    return `<svg
+    return `
+    <svg
       viewBox="0 0 ${this.width} ${this.height}"
     >
       <defs>
@@ -227,6 +254,7 @@ export default class ProfileDrawer {
         >
           <div class="stage-profile-maker-sprints">
             ${config.start ? this.drawStart(config.start) : ''}
+            ${config.sprint ? this.drawSprints(config.sprint) : ''}
             ${config.finish ? this.drawFinish(config.finish) : ''}
           </div>
           ${this.drawProfile(config)}
@@ -248,6 +276,12 @@ export default class ProfileDrawer {
         width: auto;
         height: 100%;
         position: relative;
+      }
+
+      span {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
       }
 
       .stage-profile-maker-sprints {

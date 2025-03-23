@@ -1,4 +1,4 @@
-import { Point } from '../interfaces/Gpx';
+import { Point, Waypoint } from '../interfaces/Gpx';
 import GPXParser from './GPXParser';
 
 export default class GPXHelper extends GPXParser {
@@ -64,4 +64,41 @@ export default class GPXHelper extends GPXParser {
     return 0;
   }
 
+  calculateDistanceBtw(lat1: number, lng1: number, lat2: number, lng2: number): number {
+    const R = 6371e3; // metres
+    const φ1 = lat1 * Math.PI / 180; // φ, λ in radians
+    const φ2 = lat2 * Math.PI / 180;
+    const Δφ = (lat2 - lat1) * Math.PI / 180;
+    const Δλ = (lng2 - lng1) * Math.PI / 180;
+
+    const a = Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
+      Math.cos(φ1) * Math.cos(φ2) *
+      Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+    return R * c; // in metres
+  }
+
+  getWaypoints(): Record<number, Waypoint> {
+    // COmpute distance of each waypoint
+    const points = this.getPoints();
+
+    //const waypoints: Record<number, Waypoint> = {};
+    const distWaypoints = this.waypoints.reduce((waypoints, waypoint) => {
+      // Get two nearest points according to lat and lng
+      const nearestPoints = points.sort((a, b) => {
+        return this.calculateDistanceBtw(waypoint.lat, waypoint.lon, a.lat, a.lon) -
+          this.calculateDistanceBtw(waypoint.lat, waypoint.lon, b.lat, b.lon);
+      }
+      ).slice(0, 2);
+
+      const distanceToFirst = this.calculateDistanceBtw(waypoint.lat, waypoint.lon, nearestPoints[0].lat, nearestPoints[0].lon);
+      const distanceToSecond = this.calculateDistanceBtw(waypoint.lat, waypoint.lon, nearestPoints[1].lat, nearestPoints[1].lon);
+      const waypointDist = nearestPoints[0].dist * distanceToFirst / (distanceToFirst + distanceToSecond) + nearestPoints[1].dist * distanceToSecond / (distanceToFirst + distanceToSecond);
+      waypoints[waypointDist] = waypoint;
+      return waypoints;
+    }, {});
+
+    return distWaypoints;
+  }
 }

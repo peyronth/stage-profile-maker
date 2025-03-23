@@ -27,6 +27,7 @@ export interface Font {
 export interface Line { 
   color: string;
   width: number;
+  dasharray?: string;
 }
 
 export interface Grid {
@@ -48,7 +49,6 @@ export interface Sprint extends Line {
   fixToTop: boolean;
   rotation: number;
   icons?: Record<SprintTypes, Icon>;
-  altitude?: number;
 }
 
 export interface StartFinish extends Sprint {

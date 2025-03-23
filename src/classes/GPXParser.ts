@@ -262,9 +262,9 @@ export default class GPXParser {
     return [];
   }
 
-  getElementValue(parent: Element, tagName: string): string {
+  getElementValue(parent: Element, tagName: string): string | null {
     const elem = parent.querySelector(tagName);
-    return elem?.innerHTML ?? elem?.childNodes[0].data ?? null;
+    return elem?.textContent?.trim() ?? null;
   }
 
   getInnerHTML(element: Element | null): string | null {
