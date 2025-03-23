@@ -3,12 +3,6 @@
     xmlns="http://www.topografix.com/GPX/1/1" 
     xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd" 
     creator="Openrunner - https://www.openrunner.com" >
-				<wpt lat="43.389261" lon="5.352261">
-				 	<ele>0</ele>
-				 	<name><![CDATA[Départ]]></name>
-				 	<desc><![CDATA[]]></desc>
-					<sym>1</sym>
-				</wpt>
 			
 				<wpt lat="43.447214" lon="5.568542">
 				 	<ele>0</ele>
@@ -34,13 +28,6 @@
 				<wpt lat="43.203109" lon="5.560038">
 				 	<ele>0</ele>
 				 	<name><![CDATA[Début descente Rapide - 21%]]></name>
-				 	<desc><![CDATA[]]></desc>
-					<sym>1</sym>
-				</wpt>
-			
-				<wpt lat="43.239233" lon="5.436946">
-				 	<ele>0</ele>
-				 	<name><![CDATA[Flamme Rouge - 1 km]]></name>
 				 	<desc><![CDATA[]]></desc>
 					<sym>1</sym>
 				</wpt>
