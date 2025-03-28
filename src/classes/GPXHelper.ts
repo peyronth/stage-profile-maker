@@ -1,4 +1,5 @@
 import { Point, Waypoint } from '../interfaces/Gpx';
+import { autoDetectClimbs } from '../utils/climbs';
 import GPXParser from './GPXParser';
 
 export default class GPXHelper extends GPXParser {
@@ -100,5 +101,9 @@ export default class GPXHelper extends GPXParser {
     }, {});
 
     return distWaypoints;
+  }
+
+  autoDetectClimbs() {
+    autoDetectClimbs(this.tracks[0].slopes);
   }
 }

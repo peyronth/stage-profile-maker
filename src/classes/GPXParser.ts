@@ -1,4 +1,4 @@
-import { MetaData, Waypoint, Point, Route, Track, Distance, Elevation } from '../interfaces/Gpx';
+import { MetaData, Waypoint, Point, Route, Track, Distance, Elevation, Slope } from '../interfaces/Gpx';
 
 export default class GPXParser {
   xmlSource: Document;
@@ -257,9 +257,26 @@ export default class GPXParser {
   };
 
 
-  calculSlope(points: Point[], cumulDistance: number[]): number[] {
-    //TODO: Implementation of calculSlope
-    return [];
+  calculSlope(points: Point[], cumulDistance: number[]): Slope[] {
+    let slopes: Slope[] = [];
+
+    for (let i = 0; i < points.length - 1; i++) {
+      const point = points[i];
+      const nextPoint = points[i + 1];
+
+      const distance = cumulDistance[i + 1] - cumulDistance[i];
+      const elevation = nextPoint.ele - point.ele;
+
+      const slope = elevation * 100 / distance;
+      slopes.push({
+        slopeStartTrackDistance: cumulDistance[i],
+        slopeStartEle: point.ele,
+        slope: slope,
+        slopeDistance: distance
+      });
+    }
+
+    return slopes;
   }
 
   getElementValue(parent: Element, tagName: string): string | null {

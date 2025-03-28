@@ -47,7 +47,7 @@ export interface Track {
   points: Point[];
   distance: Distance;
   elevation: Elevation;
-  slopes: number[];
+  slopes: Slope[];
 }
 
 export interface Point {
@@ -85,6 +85,13 @@ export interface Route {
   };
   distance: Distance;
   elevation: Elevation;
-  slopes: number[];
+  slopes: Slope[];
   points: Point[];
+}
+
+export interface Slope {
+  slopeStartTrackDistance: number;
+  slopeStartEle: number;
+  slope: number;
+  slopeDistance: number;
 }

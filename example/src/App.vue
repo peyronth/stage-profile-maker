@@ -79,6 +79,7 @@ export default defineComponent({
     onMounted(async () => {
       const gpx = await fetchData();
       profile.value = new ProfileMaker(gpx);
+      console.log(profile.value.gpx.autoDetectClimbs());
     });
 
     return {
