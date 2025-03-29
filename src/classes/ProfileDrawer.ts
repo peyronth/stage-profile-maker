@@ -270,7 +270,6 @@ export default class ProfileDrawer {
       }
 
       .stage-profile-maker-container {
-        background-color: #f0f0f0;
         aspect-ratio: ${this.width} / ${this.height};
         width: auto;
         height: 100%;

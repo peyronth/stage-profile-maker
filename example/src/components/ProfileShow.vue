@@ -1,0 +1,70 @@
+<template>
+  <v-container
+    class="d-flex flex-column justify-space-between"
+    height="100%"
+  >
+    <v-card
+      class="pa-4"
+      width="100%"
+    >
+      <v-row>
+          <v-card-title>
+            {{ gpxHelper.getName() }}
+          </v-card-title>
+          <v-btn
+            class="ml-auto"
+            color="primary"
+            @click="updateProfileHtml"
+          >
+            <v-icon left>mdi-refresh</v-icon>
+            Update
+          </v-btn>
+      </v-row>
+    </v-card>
+    <div
+      class="profile-container"
+      v-html="profileHtml"
+    />
+  </v-container>
+</template>
+
+<script lang="ts">
+import { computed, defineComponent, ref, watch } from 'vue';
+
+import { ProfileMaker } from 'stage-profile-maker';
+
+export default defineComponent({
+  name: 'ProfileShow',
+  components: {
+  },
+  props: {
+    profileMaker: {
+      type: ProfileMaker
+    },
+    config: {
+      type: Object
+    }
+  },
+  setup(props) {
+    const profileHtml = ref<string>();
+
+    const gpxHelper = computed(() => {
+      return props.profileMaker?.gpx;
+    });
+
+    const updateProfileHtml = () => {
+      profileHtml.value = props.profileMaker?.getHtml(props.config);
+    };
+
+    watch([() => props.profileMaker, () => props.config], () => {
+      updateProfileHtml();
+    }, { immediate: true, deep: true });
+
+    return {
+      gpxHelper,
+      profileHtml,
+      updateProfileHtml
+    };
+  },
+});
+</script>
