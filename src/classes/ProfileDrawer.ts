@@ -12,8 +12,8 @@ export default class ProfileDrawer {
   topMargin: number;
   cssImported: boolean = false;
 
-  constructor(gpxContext: string) {
-    this.gpx = new GPXHelper(gpxContext);
+  constructor(gpxHelper: GPXHelper) {
+    this.gpx = gpxHelper;
   }
 
   getBottomAltitude(): number {
@@ -88,7 +88,6 @@ export default class ProfileDrawer {
   }
 
   getPointHeight(distance: number): string {
-    console.log(distance, this.gpx.getElevation(distance));
     return this.gpx.getElevation(distance) / (this.gpx.getMaxAltitude() - this.getBottomAltitude()) * 100 + '%';
   }
 

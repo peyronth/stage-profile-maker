@@ -49,9 +49,16 @@
           </v-row>
           <div
             class="profile-container"
-            v-html="profile.getHtml(defaultPreset)"
+            v-html="profileHtml"
           />
         </v-col>
+      </v-card>
+      <v-card>
+        <v-btn
+          @click="autoDetectClimbs()"
+        >
+          Auto detect climbs
+        </v-btn>
       </v-card>
     </v-main>
   </v-app>
@@ -69,6 +76,7 @@ export default defineComponent({
   setup() {
 
     const profile = ref<ProfileMaker | null>(null);
+    const profileHtml = ref('');
 
     const fetchData = async () => {
       const response = await fetch('/export.gpx');
@@ -79,11 +87,43 @@ export default defineComponent({
     onMounted(async () => {
       const gpx = await fetchData();
       profile.value = new ProfileMaker(gpx);
-      console.log(profile.value.gpx.autoDetectClimbs());
+      drawProfile();
     });
 
+    const drawProfile = () => {
+      if (profile.value) {
+        profileHtml.value = profile.value.getHtml(defaultPreset);
+      }
+    };
+
+    const autoDetectClimbs = () => {
+      if (profile.value) {
+        const climbs = profile.value.gpx.autoDetectClimbs();
+
+        for (const climb of climbs) {
+          const climbEndPoint = profile.value.gpx.getPointAtDistance(climb.to);
+
+          profile.value.gpx.addWaypoint({
+            lat: climbEndPoint.lat,
+            lon: climbEndPoint.lon,
+            name: `Climb ${climb.difficulty}`,
+            sym: 'summit',
+            cmt: '',
+            desc: '',
+            ele: climbEndPoint.ele,
+            time: new Date(),
+          });
+        }
+
+        alert(`We added ${climbs.length} climbs`);
+        drawProfile();
+      }
+    };
+
     return {
+      autoDetectClimbs,
       defaultPreset,
+      profileHtml,
       profile
     };
   },

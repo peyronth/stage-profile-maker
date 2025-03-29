@@ -32,7 +32,7 @@ export interface Waypoint {
   desc: string;
   lat: number;
   lon: number;
-  ele: number;
+  ele: number | null;
   time: Date;
 }
 

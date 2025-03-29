@@ -8,7 +8,7 @@ export class ProfileMaker {
 
   constructor(gpxContext: string) {
     this.gpx = new GPXHelper(gpxContext);
-    this.drawer = new ProfileDrawer(gpxContext);
+    this.drawer = new ProfileDrawer(this.gpx);
   }
 
   getHtml(config: Config): string {

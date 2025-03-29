@@ -84,14 +84,13 @@ export default class GPXHelper extends GPXParser {
     // COmpute distance of each waypoint
     const points = this.getPoints();
 
-    //const waypoints: Record<number, Waypoint> = {};
     const distWaypoints = this.waypoints.reduce((waypoints, waypoint) => {
-      // Get two nearest points according to lat and lng
-      const nearestPoints = points.sort((a, b) => {
+
+      const sortedPoints = points.toSorted((a, b) => {
         return this.calculateDistanceBtw(waypoint.lat, waypoint.lon, a.lat, a.lon) -
           this.calculateDistanceBtw(waypoint.lat, waypoint.lon, b.lat, b.lon);
-      }
-      ).slice(0, 2);
+      });
+      const nearestPoints = sortedPoints.slice(0, 2);
 
       const distanceToFirst = this.calculateDistanceBtw(waypoint.lat, waypoint.lon, nearestPoints[0].lat, nearestPoints[0].lon);
       const distanceToSecond = this.calculateDistanceBtw(waypoint.lat, waypoint.lon, nearestPoints[1].lat, nearestPoints[1].lon);
@@ -103,7 +102,22 @@ export default class GPXHelper extends GPXParser {
     return distWaypoints;
   }
 
+  addWaypoint(waypoint: Waypoint) {
+    this.waypoints.push(waypoint);
+  }
+
+  getPointAtDistance(distance: number): Point {
+    const points = this.getPoints();
+    const point = points.find(p => p.dist >= distance);
+    if(point) {
+      return point;
+    }
+    return points[points.length - 1];
+  }
+
   autoDetectClimbs() {
-    autoDetectClimbs(this.tracks[0].slopes);
+    const detectedClimbs = autoDetectClimbs(this.tracks[0].slopes);
+
+    return detectedClimbs;
   }
 }
