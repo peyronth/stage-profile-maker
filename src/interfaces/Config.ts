@@ -10,11 +10,15 @@ export interface Config {
   body3D?: Body3D;
   line3D?: Line;
   sprint?: Sprint;
-  location?: Sprint;
   start?: StartFinish;
   finish?: StartFinish;
   elevationGrid?: Grid;
   distanceGrid?: Grid;
+
+  bottomDistance?: {
+    backgroundColor: string;
+    font: Font;
+  }
 }
 
 export interface Font {

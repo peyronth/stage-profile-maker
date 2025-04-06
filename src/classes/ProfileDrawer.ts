@@ -233,6 +233,45 @@ export default class ProfileDrawer {
     </svg>`;
   }
 
+  drawBottomDistance(config: Config): string {
+    const { backgroundColor, font } = config.bottomDistance;
+
+    const waypointsDistances = [];
+
+    for (const [distance, waypoint] of Object.entries(this.gpx.getWaypoints())) {
+      waypointsDistances.push(
+        `
+        <div
+          class="stage-profile-maker-distance"
+          style="
+            position: absolute;
+            left: ${(+distance / this.gpx.getDistance()) * 100}%;
+            text-align: center;
+            padding-left: -50%;
+          "
+        >
+          ${this.drawWrite(font, (+distance / 1000).toFixed(1))}
+        </div>
+        `
+        
+      );
+    }
+
+    return `
+      <div
+        style="
+          width: calc(100% + ${config.start.width / 2}px + ${config.finish.width / 2}px);
+          margin-left: -${config.start.width / 2}px;
+          background-color: ${backgroundColor};
+          position: relative;
+          height: ${config.bottomDistance.font.fontSize + 4}px;
+        "
+      >
+        ${waypointsDistances.join('')}
+      </div>
+    `;
+  }
+
   getHtml(config: Config): string {
     this.width = config.width;
     this.height = config.height;
@@ -263,6 +302,7 @@ export default class ProfileDrawer {
           </div>
           ${this.drawProfile(config)}
         </div>
+        ${config.bottomDistance ? this.drawBottomDistance(config) : ''}
       </div>
     `;
   }
@@ -299,6 +339,10 @@ export default class ProfileDrawer {
       .stage-profile-maker-container > svg {
         width: 100%;
         height: 100%;
+      }
+
+      .stage-profile-maker-distance > span {
+        margin-left: -100%;
       }
     `;
   }

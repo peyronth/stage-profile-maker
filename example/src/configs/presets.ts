@@ -129,5 +129,14 @@ export const defaultPreset: Config = {
     },
     fixToTop: true,
     rotation: 90
-  }
+  },
+  bottomDistance: {
+    backgroundColor: "#000000",
+    font: {
+      fontFamilly: "Arial",
+      fontSize: 18,
+      fontColor: "#FEEC02",
+      fontWeight: "bold"
+    }
+  },
 }
