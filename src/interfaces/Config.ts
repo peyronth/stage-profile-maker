@@ -16,7 +16,7 @@ export interface Config {
   distanceGrid?: Grid;
 
   bottomDistance?: {
-    backgroundColor: string;
+    backgroundColor?: string;
     font: Font;
   }
 }
