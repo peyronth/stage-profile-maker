@@ -1,8 +1,8 @@
 import { Point, Waypoint } from '../interfaces/Gpx';
 import { autoDetectClimbs } from '../utils/climbs';
-import GPXParser from './GPXParser';
+import GPXMaker from './GPXMaker';
 
-export default class GPXHelper extends GPXParser {
+export default class GPXHelper extends GPXMaker {
   constructor(gpxString: string) {
     super(gpxString);
   }
@@ -115,9 +115,18 @@ export default class GPXHelper extends GPXParser {
     return points[points.length - 1];
   }
 
+  deleteWaypoint(lat: number, lon: number) {
+    this.waypoints = this.waypoints.filter(waypoint => waypoint.lat !== lat && waypoint.lon !== lon);
+  }
+
   autoDetectClimbs() {
     const detectedClimbs = autoDetectClimbs(this.tracks[0].slopes);
 
     return detectedClimbs;
+  }
+
+  exportGPX(): string {
+    const gpx = this.generateGpx();
+    return gpx;
   }
 }
