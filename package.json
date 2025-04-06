@@ -6,10 +6,6 @@
     "module": "dist/index.js",
     "files": ["dist"],
     "license": "MIT",
-    "exports": {
-        "import": "./dist/index.js",
-        "require": "./dist/index.cjs"
-    },
     "workspaces": [
         "example"
     ],
