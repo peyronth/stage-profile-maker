@@ -76,9 +76,11 @@
 
 <script lang="ts">
 import { computed, defineComponent } from 'vue';
+
+import GPXHelper from 'stage-profile-maker/src/classes/GPXHelper.ts';
+import type { Waypoint } from 'stage-profile-maker/src/interfaces/index.ts';
+
 import Panel from './Panel.vue';
-import GPXHelper from '../../../../dist/classes/GPXHelper';
-import type { Waypoint } from '../../../../dist/interfaces/Gpx';
 
 export default defineComponent({
   name: 'TrackPanel',

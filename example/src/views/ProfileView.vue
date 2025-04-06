@@ -1,5 +1,6 @@
 <template>
   <TrackPanel
+    v-if="profileMaker"
     :width="450"
     v-model:gpxHelper="profileMaker.gpx"
   >
@@ -27,7 +28,7 @@ import TrackPanel from '../components/panel/TrackPanel.vue';
 import StylePanel from '../components/panel/StylePanel.vue';
 import { defaultPreset } from '../configs/presets';
 import ProfileShow from '../components/ProfileShow.vue';
-import { ProfileMaker } from 'stage-profile-maker';
+import { ProfileMaker } from 'stage-profile-maker/src/index.ts';
 
 export default defineComponent({
   name: 'ProfileView',

@@ -50,7 +50,7 @@ export default defineComponent({
       default: 'Panel'
     }
   },
-  setup(props) {
+  setup() {
     const isOpen = ref(true);
 
     return {

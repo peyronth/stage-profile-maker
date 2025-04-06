@@ -4,6 +4,7 @@
     height="100%"
   >
     <v-card
+      v-if="gpxHelper"
       class="pa-4"
       width="100%"
     >
@@ -29,9 +30,10 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, ref, watch } from 'vue';
+import { computed, defineComponent, ref, watch, type PropType } from 'vue';
 
 import { ProfileMaker } from 'stage-profile-maker';
+import type { Config } from 'stage-profile-maker/src/interfaces/index.ts';
 
 export default defineComponent({
   name: 'ProfileShow',
@@ -42,7 +44,7 @@ export default defineComponent({
       type: ProfileMaker
     },
     config: {
-      type: Object
+      type: Object as PropType<Config>
     }
   },
   setup(props) {
@@ -53,6 +55,9 @@ export default defineComponent({
     });
 
     const updateProfileHtml = () => {
+      if(props.config === undefined) {
+        return;
+      }
       profileHtml.value = props.profileMaker?.getHtml(props.config);
     };
 

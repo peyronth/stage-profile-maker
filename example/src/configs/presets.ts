@@ -1,4 +1,4 @@
-import type { Config } from '../../../src/interfaces/Config';
+import type { Config } from 'stage-profile-maker/src/interfaces/index.ts';
 
 export const defaultPreset: Config = {
   width: 1300,
