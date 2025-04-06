@@ -123,7 +123,7 @@ export default defineComponent({
           lon: topNearestPoint.lon,
           ele: topNearestPoint.ele,
           name: `Auto detected climb`,
-          sym: 'climb',
+          sym: climb.difficulty,
           desc: `Auto detected climb from ${climb.from} to ${climb.to} m`,
           cmt: "",
           time: new Date()

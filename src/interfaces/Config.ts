@@ -48,7 +48,7 @@ export interface Sprint extends Line {
   policeForDistance?: Font;
   fixToTop: boolean;
   rotation: number;
-  icons?: Record<SprintTypes, Icon>;
+  icons?: Partial<Record<SprintTypes, Icon>>;
 }
 
 export interface StartFinish extends Sprint {

@@ -195,8 +195,13 @@ export default class ProfileDrawer {
     
     for (const sprintDistance in sprints) {
       const sprint = sprints[sprintDistance];
+      let icon = null;
       
-      sprintHtmls.push(this.drawMarker(config, sprint.name, +sprintDistance));
+      if(config.icons[sprint.sym]) {
+        icon = config.icons[sprint.sym];
+      }
+
+      sprintHtmls.push(this.drawMarker(config, sprint.name, +sprintDistance, icon));
     }
 
     return sprintHtmls.join('');
