@@ -2,31 +2,50 @@
   <Panel
     name="Profile style"
   > 
-    <div
-      :contenteditable="true"
-    >
-      {{ $props.modelValue }}
-    </div>
+    <SelectProfilePreset
+      :modelValue="actualPreset"
+      @update:model-value="onNewPreset"
+    />
   </Panel>
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
+import { defineComponent, ref } from 'vue';
+
+import type { Config } from 'stage-profile-maker/src/interfaces/index.ts';
+
+import { presets } from '../../configs/presets';
 
 import Panel from './Panel.vue';
+import SelectProfilePreset from '../SelectProfilePreset.vue';
 
 export default defineComponent({
   name: 'StylePanel',
   components: {
-    Panel
+    Panel,
+    SelectProfilePreset
   },
   props: {
     modelValue: Object
   },
   emits: ['update:model-value'],
-  setup() {
+  setup(_props, { emit }) {
+    const actualPreset = ref<string | null>(null);
+
+    const onNewPreset = (newPreset: string) => {
+      const modelValue= presets[newPreset] as Config;
+
+      if (!modelValue) {
+        console.error(`Preset ${newPreset} not found`);
+        return;
+      }
+      actualPreset.value = newPreset;
+      emit('update:model-value', modelValue);
+    };
 
     return {
+      actualPreset,
+      onNewPreset
     };
   },
 });

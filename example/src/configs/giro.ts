@@ -6,28 +6,31 @@ export const giroPreset: Config = {
   height: 400,
   topMargin: 400,
 
+  pointCount: 200,
+
   body: {
     color: '#FAF8EC',
   },
 
   mainLine: {
     color: '#C34074',
-    width: 6,
+    width: 2.5,
   },
 
   body3D: {
-    retreat: 15,
+    retreat: [-8, -4],
     color: '#A3A7AA'
   },
 
   line3D: {
     color: '#000000',
-    width: 6,
+    width: 2.5,
   },
 
 
   elevationGrid: {
     overProfileOnly: true,
+    dasharray: '1 5',
     width: 1,
     interval: 200,
     color: '#000000'
@@ -83,6 +86,7 @@ export const giroPreset: Config = {
   sprint: {
     color: "#000000",
     width: 2,
+    offset: 16,
     policeForName: {
       fontFamilly: "Arial",
       fontSize: 16,

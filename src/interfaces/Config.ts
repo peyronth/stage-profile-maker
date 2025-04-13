@@ -5,6 +5,8 @@ export interface Config {
   height: number;
   topMargin: number;
 
+  pointCount: number;
+
   body: ProfileBody;
   mainLine?: Line;
   body3D?: Body3D;
@@ -39,6 +41,7 @@ export interface Grid {
   color: string;
   width: number;
   interval: number;
+  dasharray?: string;
 }
 
 export interface ProfileBody {
@@ -52,6 +55,7 @@ export interface Sprint extends Line {
   policeForDistance?: Font;
   fixToTop: boolean;
   rotation: number;
+  offset?: number;
   icons?: Partial<Record<SprintTypes, Icon>>;
 }
 
@@ -61,7 +65,7 @@ export interface StartFinish extends Sprint {
 }
 
 export interface Body3D extends ProfileBody {
-  retreat: number;
+  retreat: [number, number];
 }
 
 export interface Icon {

@@ -11,6 +11,7 @@ export default class ProfileDrawer {
   yScale: number;
   topMargin: number;
   cssImported: boolean = false;
+  pointCount: number;
 
   constructor(gpxHelper: GPXHelper) {
     this.gpx = gpxHelper;
@@ -26,50 +27,51 @@ export default class ProfileDrawer {
     }
   }
 
-  drawMainLine(config: Line): string {
+  drawProfileLine(config: Line, offset: [number, number] = [0, 0]): string {
+    const [offsetX, offsetY] = offset;
     const points = this.gpx.getPoints();
     const minAltitude = this.getBottomAltitude();
-
-    // Calculer le nombre de points à utiliser
-    const maxPoints = 2500;
-    const step = Math.ceil(points.length / maxPoints);
-
-    let path = `M  0 ${this.height - (points[0].ele - minAltitude) * this.yScale}`;
-
-    // Échantillonner les points
+  
+    const step = Math.ceil(points.length / this.pointCount);
+  
+    let path = `M ${offsetX} ${offsetY + this.height - (points[0].ele - minAltitude) * this.yScale}`;
+  
     for (let i = 1; i < points.length; i += step) {
       const point = points[i];
-      const x = point.dist * this.xScale;
-      const y = this.height - (point.ele - minAltitude) * this.yScale;
+      const x = offsetX + point.dist * this.xScale;
+      const y = offsetY + this.height - (point.ele - minAltitude) * this.yScale;
       path += ` L ${x} ${y}`;
     }
-
-    return `<path d="${path}" stroke="${config.color}" fill="none" />`;
+  
+    return `<path d="${path}" stroke="${config.color}" stroke-width="${config.width}" fill="none" />`;
   }
+  
 
-  drawBody(config: ProfileBody): string {
+  drawBody(config: ProfileBody, offset: [number, number] = [0, 0]): string {
+    const [offsetX, offsetY] = offset;
     const points = this.gpx.getPoints();
     const minAltitude = this.getBottomAltitude();
-
-    // Calculer le nombre de points à utiliser
-    const maxPoints = 2500;
-    const step = Math.ceil(points.length / maxPoints);
-
-    let path = `M  0 ${this.height - (points[0].ele - minAltitude) * this.yScale}`;
-
-    // Échantillonner les points
-    for (let i = 1; i < points.length; i += step) {
-      const point = points[i];
-      const x = point.dist * this.xScale;
-      const y = this.height - (point.ele - minAltitude) * this.yScale;
+  
+    const step = Math.ceil(points.length / this.pointCount);
+  
+    let path = `M ${offsetX} ${offsetY + this.height - (points[0].ele - minAltitude) * this.yScale}`;
+  
+    let point;
+    for (let i = 1;i < points.length; i += step) {
+      point = points[i];
+      const x = offsetX + point.dist * this.xScale;
+      const y = offsetY + this.height - (point.ele - minAltitude) * this.yScale;
       path += ` L ${x} ${y}`;
     }
-
-    path += ` L ${this.width} ${this.height}`;
-    path += ` L 0 ${this.height}`;
-
+    path += ` L ${point.dist * this.xScale} ${this.height - (point.ele - minAltitude) * this.yScale}`;
+  
+    path += ` L ${offsetX + this.width} ${offsetY + this.height}`;
+    path += ` L ${0} ${this.height}`;
+    path += ` L ${offsetX} ${offsetY + this.height}`;
+  
     return `<path d="${path}" fill="${config.color}" />`;
   }
+  
 
   drawElevationGrid(config: Grid): string {
     const gridLines: string[] = [];
@@ -77,7 +79,16 @@ export default class ProfileDrawer {
 
     // Générer les lignes horizontales tous les `step` pixels
     for (let y = this.height; y > 0; y -= step) {
-      gridLines.push(`<line x1="0" y1="${y}" x2="${this.width}" y2="${y}" stroke="${config.color}" stroke-width="${config.width}" />`);
+      gridLines.push(`
+        <line
+          x1="0"
+          y1="${y}"
+          x2="${this.width}"
+          y2="${y}"
+          stroke="${config.color}"
+          stroke-width="${config.width}"
+          ${config.dasharray ? `stroke-dasharray="${config.dasharray}"` : ''}
+        />`);
     }
 
     return `
@@ -88,7 +99,7 @@ export default class ProfileDrawer {
   }
 
   getPointHeight(distance: number): string {
-    return this.gpx.getElevation(distance) / (this.gpx.getMaxAltitude() - this.getBottomAltitude()) * 100 + '%';
+    return this.gpx.getElevation(distance) / (this.gpx.getMaxAltitude() - this.getBottomAltitude()) * 50 + '%';
   }
 
   drawLine(config: Line, lineHeight: string): string {
@@ -99,7 +110,7 @@ export default class ProfileDrawer {
         flex-grow: 0;
       "
       width="${config.width}"
-      height="calc(${lineHeight} - ${this.topMargin}px)"
+      height="calc(${lineHeight})"
     >
       <line
         x1="0"
@@ -140,9 +151,9 @@ export default class ProfileDrawer {
   }
 
   drawMarker(config: Sprint, name: string, distance: number, icon?: Icon): string {
-    const { color, width, fixToTop, policeForName, policeForAltitude } = config;
+    const { fixToTop, policeForName, policeForAltitude, offset } = config;
 
-    const lineHeight = fixToTop ? '100%' : this.getPointHeight(distance);
+    const lineHeight = fixToTop ? '100%' : `calc(${this.getPointHeight(distance)} + ${offset ?? 0}px)`;
 
     return `
       <div style="
@@ -209,19 +220,33 @@ export default class ProfileDrawer {
 
   drawProfile(config: Config): string {
     const svgElements = [];
-    const bodyMaskPath = this.drawBody({ color: "white" });
 
+    const bodyMaskPath = this.drawBody({ color: "white" });
+    let offset = [0, 0];
+    
+
+    if(config.body3D) {
+      offset = config.body3D.retreat;
+      svgElements.push(this.drawBody(config.body3D, config.body3D.retreat));
+    }
+    if (config.line3D && config.body3D) {
+      svgElements.push(this.drawProfileLine(config.line3D, config.body3D.retreat));
+    }
     svgElements.push(this.drawBody(config.body));
     if (config.mainLine) {
-      svgElements.push(this.drawMainLine(config.mainLine));
+      svgElements.push(this.drawProfileLine(config.mainLine));
     }
+    
     if (config.elevationGrid) {
       svgElements.push(this.drawElevationGrid(config.elevationGrid));
     }
 
     return `
     <svg
-      viewBox="0 0 ${this.width} ${this.height}"
+      style="
+        margin-left: ${offset[0]}px;
+      "
+      viewBox="${offset[0]} ${0} ${this.width} ${this.height - offset[1]}"
     >
       <defs>
         <mask id="${bodyMaskId}">
@@ -238,7 +263,7 @@ export default class ProfileDrawer {
 
     const waypointsDistances = [];
 
-    for (const [distance, waypoint] of Object.entries(this.gpx.getWaypoints())) {
+    for (const [distance] of Object.entries(this.gpx.getWaypoints())) {
       waypointsDistances.push(
         `
         <div
@@ -276,6 +301,7 @@ export default class ProfileDrawer {
     this.width = config.width;
     this.height = config.height;
     this.topMargin = config.topMargin;
+    this.pointCount = config.pointCount;
     this.xScale = this.width / this.gpx.getDistance();
     this.yScale = this.height / (this.gpx.getMaxAltitude() - this.getBottomAltitude());
 
@@ -329,7 +355,7 @@ export default class ProfileDrawer {
 
       .stage-profile-maker-sprints {
         z-index: 2;
-        height: calc(100% + ${this.topMargin}px);
+        height: calc(200%);
         width: 100%;
         left: 0;
         position: absolute;

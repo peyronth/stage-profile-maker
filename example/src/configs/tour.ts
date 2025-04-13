@@ -6,6 +6,8 @@ export const tourPreset: Config = {
   height: 400,
   topMargin: 400,
 
+  pointCount: 400,
+
   body: {
     color: '#FEEC02',
   },

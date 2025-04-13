@@ -41,7 +41,7 @@ export default defineComponent({
   },
   props: {
     profileMaker: {
-      type: ProfileMaker
+      type: Object as PropType<ProfileMaker>
     },
     config: {
       type: Object as PropType<Config>
