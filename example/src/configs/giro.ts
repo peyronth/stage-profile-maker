@@ -6,7 +6,7 @@ export const giroPreset: Config = {
   height: 400,
   topMargin: 400,
 
-  pointCount: 200,
+  pointCount: 220,
 
   body: {
     color: '#FAF8EC',

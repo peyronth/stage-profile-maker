@@ -53,7 +53,7 @@ export default class GPXHelper extends GPXMaker {
   getPoints(): Point[] {
     return this.tracks.reduce((acc, track) => {
       return acc.concat(track.points);
-    }, []);
+    }, []).sort((a, b) => a.dist - b.dist)
   }
 
   getElevation (distance: number): number {

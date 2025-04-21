@@ -42,6 +42,9 @@ export default class ProfileDrawer {
       const y = offsetY + this.height - (point.ele - minAltitude) * this.yScale;
       path += ` L ${x} ${y}`;
     }
+
+    const lastPoint = points[points.length - 1];
+    path += ` L ${offsetX + lastPoint.dist * this.xScale} ${offsetY + this.height - (lastPoint.ele - minAltitude) * this.yScale}`;
   
     return `<path d="${path}" stroke="${config.color}" stroke-width="${config.width}" fill="none" />`;
   }
@@ -63,7 +66,11 @@ export default class ProfileDrawer {
       const y = offsetY + this.height - (point.ele - minAltitude) * this.yScale;
       path += ` L ${x} ${y}`;
     }
-    path += ` L ${point.dist * this.xScale} ${this.height - (point.ele - minAltitude) * this.yScale}`;
+    // Always draw last point
+    const lastPoint = points[points.length - 1];
+    path += ` L ${offsetX + lastPoint.dist * this.xScale} ${offsetY + this.height - (lastPoint.ele - minAltitude) * this.yScale}`;
+    //Join it with the last point without offset to make the body 3D join the finish line
+    path += ` L ${lastPoint.dist * this.xScale} ${this.height - (lastPoint.ele - minAltitude) * this.yScale}`;
   
     path += ` L ${offsetX + this.width} ${offsetY + this.height}`;
     path += ` L ${0} ${this.height}`;
@@ -244,9 +251,13 @@ export default class ProfileDrawer {
     return `
     <svg
       style="
-        margin-left: ${offset[0]}px;
+        margin-left: ${offset[0] / this.width * 100}%;
+        width: ${100 - (offset[0] / this.width * 100)}%;
+        margin-top: ${offset[1] / this.width * 100}%;
+        height: ${100 - (offset[1] / this.height * 100)}%;
       "
-      viewBox="${offset[0]} ${0} ${this.width} ${this.height - offset[1]}"
+      viewBox="${offset[0]} ${0} ${this.width - offset[0]} ${this.height - offset[1]}"
+      preserveAspectRatio="xMinYMin slice"
     >
       <defs>
         <mask id="${bodyMaskId}">
@@ -363,7 +374,6 @@ export default class ProfileDrawer {
       }
 
       .stage-profile-maker-container > svg {
-        width: 100%;
         height: 100%;
       }
 
