@@ -55,6 +55,17 @@ export default defineComponent({
       config.value.finish.name = await profileMaker.value.gpx.getEndLocation();
     }, { immediate: true });
 
+    watch(config, async () => {
+      if(!config.value) return;
+
+      if(config.value.start.name === '') {
+        config.value.start.name = await profileMaker.value?.gpx.getStartLocation() || '';
+      }
+      if(config.value.finish.name === '') {
+        config.value.finish.name = await profileMaker.value?.gpx.getEndLocation() || '';
+      }
+    }, { deep: true });
+
     return {
       profileMaker,
       config
