@@ -9,11 +9,29 @@
       width="100%"
     >
       <v-row>
-          <v-card-title>
-            {{ gpxHelper.getName() }}
-          </v-card-title>
-          <v-col v-if="loading" cols="12" class="text-center" >
-            <v-progress-circular indeterminate color="primary" />
+          <v-col>
+            <v-card-title>
+              {{ gpxHelper.getName() }}
+            </v-card-title>
+            <v-card-subtitle
+              v-if="$props.config?.start && $props.config?.finish"
+            >
+              {{ $props.config.start.name }} - {{ $props.config.finish.name }}
+            </v-card-subtitle>
+          </v-col>
+          <v-col class="text-right" >
+            <v-progress-circular 
+              v-if="loading"
+              indeterminate
+              color="primary"
+            />
+            <BasicInformationsButton
+              v-else-if="$props.config"
+              :config="$props.config"
+              :trackName="gpxHelper.getName()"
+              @update:config="onNewConfig"
+              @update:trackName="onNewTrackName"
+            />
           </v-col>
       </v-row>
     </v-card>
@@ -27,13 +45,17 @@
 <script lang="ts">
 import { computed, defineComponent, watch, type PropType } from 'vue';
 
+import { useProfileHtml } from '../composables/useProfileHtml';
+
 import { ProfileMaker } from 'stage-profile-maker';
 import type { Config } from 'stage-profile-maker/src/interfaces/index.ts';
-import { useProfileHtml } from '../composables/useProfileHtml';
+
+import BasicInformationsButton from './BasicInformationsButton.vue';
 
 export default defineComponent({
   name: 'ProfileShow',
   components: {
+    BasicInformationsButton
   },
   props: {
     profileMaker: {
@@ -43,7 +65,8 @@ export default defineComponent({
       type: Object as PropType<Config>
     }
   },
-  setup(props) {
+  emits: ['update:config'],
+  setup(props, { emit }) {
     const { loading, html: profileHtml, getHtml } = useProfileHtml();
 
     const gpxHelper = computed(() => {
@@ -54,10 +77,29 @@ export default defineComponent({
       getHtml(props.profileMaker, props.config);
     }, { immediate: true, deep: true });
 
+    const onNewTrackName = (newName: string) => {
+      if(!props.profileMaker) {
+        console.error('ProfileMaker is not defined');
+        return;
+      }
+      props.profileMaker.gpx.setName(newName);
+    };
+
+    const onNewConfig = (config: Config) => {
+      if(!props.config) {
+        console.error('Config is not defined');
+        return;
+      }
+      
+      emit('update:config', config);
+    };
+
     return {
       loading,
       gpxHelper,
-      profileHtml
+      profileHtml,
+      onNewConfig,
+      onNewTrackName
     };
   },
 });

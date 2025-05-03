@@ -12,7 +12,7 @@
   </TrackPanel>
   <ProfileShow
     :profileMaker="profileMaker"
-    :config="style"
+    v-model:config="style"
   />
   <StylePanel
     side="right"

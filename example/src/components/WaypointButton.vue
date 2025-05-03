@@ -74,10 +74,10 @@
       </v-form>
     </v-sheet>
       <template v-slot:actions>
-        <div class="d-flex justify-end gap-2 px-4 pb-4">
+        <v-row justify="end" class="px-4 pb-4 ga-2" no-gutters>
           <v-btn color="grey" variant="outlined" @click="dialog = false">Cancel</v-btn>
           <v-btn color="primary" variant="elevated" @click="onSubmit">Submit</v-btn>
-        </div>
+        </v-row>
       </template>
     </v-card>
   </v-dialog>

@@ -113,14 +113,18 @@ export default class GPXHelper extends GPXMaker {
     return points[points.length - 1];
   }
 
-  deleteWaypoint(lat: number, lon: number) {
-    this.waypoints = this.waypoints.filter(waypoint => waypoint.lat !== lat && waypoint.lon !== lon);
+  setName(name: string) {
+    this.metadata.name = name;
   }
-
+  
   autoDetectClimbs() {
     const detectedClimbs = autoDetectClimbs(this.tracks[0].slopes);
-
+    
     return detectedClimbs;
+  }
+
+  deleteWaypoint(lat: number, lon: number) {
+    this.waypoints = this.waypoints.filter(waypoint => waypoint.lat !== lat && waypoint.lon !== lon);
   }
 
   exportGPX(): string {

@@ -13,8 +13,8 @@ export interface Config {
   body3D?: Body3D;
   line3D?: Line;
   sprint?: Sprint;
-  start?: StartFinish;
-  finish?: StartFinish;
+  start: StartFinish;
+  finish: StartFinish;
   elevationGrid?: Grid;
   distanceGrid?: Grid;
 
