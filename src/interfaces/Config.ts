@@ -26,7 +26,7 @@ export interface Config {
 }
 
 export interface Font {
-  fontFamilly: string;
+  fontFamily: string;
   fontSize: number;
   fontColor: string;
   fontWeight?: string;

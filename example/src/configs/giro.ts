@@ -42,13 +42,13 @@ export const giroPreset3d: Config = {
     color: "#000000",
     width: 6,
     policeForName: {
-      fontFamilly: "Arial",
+      fontFamily: "Arial",
       fontSize: 24,
       fontColor: "#000000",
       fontWeight: "bold"
     },
     policeForAltitude: {
-      fontFamilly: "Arial",
+      fontFamily: "Arial",
       fontSize: 24,
       fontColor: "#000000",
       fontWeight: "bold"
@@ -68,13 +68,13 @@ export const giroPreset3d: Config = {
     color: "#000000",
     width: 6,
     policeForName: {
-      fontFamilly: "Arial",
+      fontFamily: "Arial",
       fontSize: 24,
       fontColor: "#000000",
       fontWeight: "bold"
     },
     policeForAltitude: {
-      fontFamilly: "Arial",
+      fontFamily: "Arial",
       fontSize: 24,
       fontColor: "#000000",
       fontWeight: "bold"
@@ -95,13 +95,13 @@ export const giroPreset3d: Config = {
     iconPosition: IconPosition.BodyBottom,
     labelPosition: LabelPosition.Body3D,
     policeForName: {
-      fontFamilly: "Arial",
+      fontFamily: "Arial",
       fontSize: 16,
       fontColor: "#000000",
       fontWeight: "bold"
     },
     policeForAltitude: {
-      fontFamilly: "Arial",
+      fontFamily: "Arial",
       fontSize: 16,
       fontColor: "#000000",
       fontWeight: "bold"
@@ -164,7 +164,7 @@ export const giroPreset3d: Config = {
   bottomDistance: {
     rotation: 90,
     font: {
-      fontFamilly: "Arial",
+      fontFamily: "Arial",
       fontSize: 16,
       fontColor: "#000000"
     }
@@ -208,13 +208,13 @@ export const giroPreset2d: Config = {
     color: "#060702",
     width: 3,
     policeForName: {
-      fontFamilly: "Arial",
+      fontFamily: "Arial",
       fontSize: 24,
       fontColor: "#060702",
       fontWeight: "bold"
     },
     policeForAltitude: {
-      fontFamilly: "Arial",
+      fontFamily: "Arial",
       fontSize: 24,
       fontColor: "#060702",
       fontWeight: "bold"
@@ -235,13 +235,13 @@ export const giroPreset2d: Config = {
     color: "#060702",
     width: 3,
     policeForName: {
-      fontFamilly: "Arial",
+      fontFamily: "Arial",
       fontSize: 24,
       fontColor: "#060702",
       fontWeight: "bold"
     },
     policeForAltitude: {
-      fontFamilly: "Arial",
+      fontFamily: "Arial",
       fontSize: 24,
       fontColor: "#060702",
       fontWeight: "bold"
@@ -262,13 +262,13 @@ export const giroPreset2d: Config = {
     iconPosition: IconPosition.BodyBottom,
     labelPosition: LabelPosition.Body,
     policeForName: {
-      fontFamilly: "Arial",
+      fontFamily: "Arial",
       fontSize: 16,
       fontColor: "#060702",
       fontWeight: "bold"
     },
     policeForAltitude: {
-      fontFamilly: "Arial",
+      fontFamily: "Arial",
       fontSize: 16,
       fontColor: "#060702",
       fontWeight: "bold"
@@ -331,7 +331,7 @@ export const giroPreset2d: Config = {
   bottomDistance: {
     rotation: 90,
     font: {
-      fontFamilly: "Arial",
+      fontFamily: "Arial",
       fontSize: 16,
       fontColor: "#060702"
     }

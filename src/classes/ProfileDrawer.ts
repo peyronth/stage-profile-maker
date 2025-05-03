@@ -148,7 +148,7 @@ export default class ProfileDrawer {
     return `
     <span
       style="
-        font-family: ${config.fontFamilly};
+        font-family: ${config.fontFamily};
         font-size: ${config.fontSize}px;
         color: ${config.fontColor};
         font-weight: ${config.fontWeight};

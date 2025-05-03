@@ -24,13 +24,13 @@ export const parisNicePreset: Config = {
     color: "#000000",
     width: 2,
     policeForName: {
-      fontFamilly: "Arial",
+      fontFamily: "Arial",
       fontSize: 24,
       fontColor: "#000000",
       fontWeight: "bold"
     },
     policeForAltitude: {
-      fontFamilly: "Arial",
+      fontFamily: "Arial",
       fontSize: 20,
       fontColor: "#000000"
     },
@@ -49,13 +49,13 @@ export const parisNicePreset: Config = {
     color: "#000000",
     width: 2,
     policeForName: {
-      fontFamilly: "Arial",
+      fontFamily: "Arial",
       fontSize: 24,
       fontColor: "#000000",
       fontWeight: "bold"
     },
     policeForAltitude: {
-      fontFamilly: "Arial",
+      fontFamily: "Arial",
       fontSize: 20,
       fontColor: "#000000"
     },
@@ -75,12 +75,12 @@ export const parisNicePreset: Config = {
     width: 2,
     dasharray: "4 4",
     policeForName: {
-      fontFamilly: "Arial",
+      fontFamily: "Arial",
       fontSize: 16,
       fontColor: "#000000"
     },
     policeForAltitude: {
-      fontFamilly: "Arial",
+      fontFamily: "Arial",
       fontSize: 16,
       fontColor: "#000000"
     },
@@ -142,7 +142,7 @@ export const parisNicePreset: Config = {
   bottomDistance: {
     backgroundColor: "#0198D7",
     font: {
-      fontFamilly: "Arial",
+      fontFamily: "Arial",
       fontSize: 18,
       fontColor: "#EAFDFF",
       fontWeight: "bold"
