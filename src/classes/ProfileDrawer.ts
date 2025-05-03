@@ -198,6 +198,21 @@ export default class ProfileDrawer {
         </div>
       `;
 
+    let bottomIconHtml = '';
+    if (iconPosition === IconPosition.BodyBottom && icon) {
+      bottomIconHtml = `
+        <div
+          style="
+            position: absolute;
+            left: -${icon.width / 2}px;
+            bottom: 0;
+          "
+        >
+          ${this.drawIcon(icon)}
+        </div>
+      `;
+    }
+
     return `
       <div style="
         position: absolute;
@@ -207,6 +222,7 @@ export default class ProfileDrawer {
         width: 100%;
         height: 100%;
       ">
+        ${bottomIconHtml}
         <div
           style="
             margin-left: -100%;
@@ -215,7 +231,7 @@ export default class ProfileDrawer {
             align-items: center;
             height: 100%;
             justify-content: flex-end;
-            gap: ${-this.offset3d[1] / (this.height * 2) * 100}%;
+            gap: 8px;
           "
         >
           ${iconAndLabel}
