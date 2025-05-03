@@ -1,0 +1,26 @@
+{
+    "name": "stage-profile-maker",
+    "version": "0.0.1",
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "module": "dist/index.js",
+    "files": ["dist"],
+    "license": "MIT",
+    "workspaces": [
+        "example"
+    ],
+    "scripts": {
+        "build": "tsc",
+        "dev": "npm link && concurrently \"npm run watch-build\" \"cd example && npm run dev\"",
+        "watch-build": "tsc --watch"
+    },
+    "devDependencies": {
+        "concurrently": "9.1.2",
+        "sass": "1.80.4",
+        "typescript": "5.6.3"
+    },
+    "dependencies": {
+        "@mdi/font": "7.4.47",
+        "xmlbuilder2": "3.1.1"
+    }
+}
