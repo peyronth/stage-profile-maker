@@ -5,7 +5,7 @@ import { parisNicePreset } from './parisnice';
 import { giroPresets } from './giro';
 
 export const presets: Record<string, Config> = {
-  'Tour de Fance v1': tourPreset,
+  'Tour de France v1': tourPreset,
   'Giro d\'Italie v1': giroPresets[1],
   'Giro d\'Italie v2': giroPresets[0],
   'Pais Nice v1': parisNicePreset,
