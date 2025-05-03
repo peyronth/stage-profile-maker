@@ -12,14 +12,9 @@
           <v-card-title>
             {{ gpxHelper.getName() }}
           </v-card-title>
-          <v-btn
-            class="ml-auto"
-            color="primary"
-            @click="updateProfileHtml"
-          >
-            <v-icon left>mdi-refresh</v-icon>
-            Update
-          </v-btn>
+          <v-col v-if="loading" cols="12" class="text-center" >
+            <v-progress-circular indeterminate color="primary" />
+          </v-col>
       </v-row>
     </v-card>
     <div
@@ -30,10 +25,11 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, ref, watch, type PropType } from 'vue';
+import { computed, defineComponent, watch, type PropType } from 'vue';
 
 import { ProfileMaker } from 'stage-profile-maker';
 import type { Config } from 'stage-profile-maker/src/interfaces/index.ts';
+import { useProfileHtml } from '../composables/useProfileHtml';
 
 export default defineComponent({
   name: 'ProfileShow',
@@ -48,27 +44,20 @@ export default defineComponent({
     }
   },
   setup(props) {
-    const profileHtml = ref<string>();
+    const { loading, html: profileHtml, getHtml } = useProfileHtml();
 
     const gpxHelper = computed(() => {
       return props.profileMaker?.gpx;
     });
 
-    const updateProfileHtml = () => {
-      if(props.config === undefined) {
-        return;
-      }
-      profileHtml.value = props.profileMaker?.getHtml(props.config);
-    };
-
-    watch([() => props.profileMaker, () => props.config], () => {
-      updateProfileHtml();
+    watch([() => props.config, () => props.profileMaker?.gpx], () => {
+      getHtml(props.profileMaker, props.config);
     }, { immediate: true, deep: true });
 
     return {
+      loading,
       gpxHelper,
-      profileHtml,
-      updateProfileHtml
+      profileHtml
     };
   },
 });

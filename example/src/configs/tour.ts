@@ -1,5 +1,6 @@
 import type { Config } from 'stage-profile-maker/src/interfaces/index.ts';
 import { SprintTypes } from 'stage-profile-maker/src/enums/SprintTypes.ts';
+import { IconPosition, LabelPosition } from '../../../src/enums/SprintPositions';
 
 export const tourPreset: Config = {
   width: 1300,
@@ -18,6 +19,8 @@ export const tourPreset: Config = {
     color: '#F0D600'
   },
   start: {
+    iconPosition: IconPosition.BeforeLabel,
+    labelPosition: LabelPosition.Body,
     color: "#000000",
     width: 2,
     policeForName: {
@@ -41,6 +44,8 @@ export const tourPreset: Config = {
     }
   },
   finish: {
+    iconPosition: IconPosition.BeforeLabel,
+    labelPosition: LabelPosition.Body,
     color: "#000000",
     width: 2,
     policeForName: {
@@ -64,6 +69,8 @@ export const tourPreset: Config = {
     }
   },
   sprint: {
+    iconPosition: IconPosition.BeforeLabel,
+    labelPosition: LabelPosition.Body,
     color: "#000000",
     width: 2,
     dasharray: "4 4",

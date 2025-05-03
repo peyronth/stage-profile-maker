@@ -33,7 +33,7 @@ export interface Waypoint {
   lat: number;
   lon: number;
   ele: number | null;
-  time: Date;
+  time: Date | null;
 }
 
 export interface Track {

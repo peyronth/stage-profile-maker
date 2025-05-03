@@ -80,22 +80,20 @@ export default class GPXHelper extends GPXMaker {
     return R * c; // in metres
   }
 
+  getDistanceAtPoint(lat: number, lon: number): number {
+    const sortedPoints = this.getPoints().toSorted((a, b) => {
+      return this.calculateDistanceBtw(lat, lon, a.lat, a.lon) - this.calculateDistanceBtw(lat, lon, b.lat, b.lon);
+    });
+    const nearestPoints = sortedPoints.slice(0, 2);
+    const distanceToFirst = this.calculateDistanceBtw(lat, lon, nearestPoints[0].lat, nearestPoints[0].lon);
+    const distanceToSecond = this.calculateDistanceBtw(lat, lon, nearestPoints[1].lat, nearestPoints[1].lon);
+    const pointDist = nearestPoints[0].dist * distanceToFirst / (distanceToFirst + distanceToSecond) + nearestPoints[1].dist * distanceToSecond / (distanceToFirst + distanceToSecond);
+    return pointDist;
+  }
+
   getWaypoints(): Record<number, Waypoint> {
-    // COmpute distance of each waypoint
-    const points = this.getPoints();
-
     const distWaypoints = this.waypoints.reduce((waypoints, waypoint) => {
-
-      const sortedPoints = points.toSorted((a, b) => {
-        return this.calculateDistanceBtw(waypoint.lat, waypoint.lon, a.lat, a.lon) -
-          this.calculateDistanceBtw(waypoint.lat, waypoint.lon, b.lat, b.lon);
-      });
-      const nearestPoints = sortedPoints.slice(0, 2);
-
-      const distanceToFirst = this.calculateDistanceBtw(waypoint.lat, waypoint.lon, nearestPoints[0].lat, nearestPoints[0].lon);
-      const distanceToSecond = this.calculateDistanceBtw(waypoint.lat, waypoint.lon, nearestPoints[1].lat, nearestPoints[1].lon);
-      const waypointDist = nearestPoints[0].dist * distanceToFirst / (distanceToFirst + distanceToSecond) + nearestPoints[1].dist * distanceToSecond / (distanceToFirst + distanceToSecond);
-      waypoints[waypointDist] = waypoint;
+      waypoints[this.getDistanceAtPoint(waypoint.lat, waypoint.lon)] = waypoint;
       return waypoints;
     }, {});
 

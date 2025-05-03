@@ -22,13 +22,24 @@
           </v-list-item-subtitle>
 
           <template v-slot:append>
-            <v-icon
-              class="me-2"
-              @click="onEdit(distance)"
-              aria-label="Éditer le waypoint"
+            <WaypointButton
+              v-if="$props.gpxHelper"
+              :gpxHelper="$props.gpxHelper"
+              :model-value="waypoint"
+              @update:model-value="onEdit(waypoint, $event)"
+              @delete="onDelete(waypoint)"
             >
-              mdi-pencil
-            </v-icon>
+              <template
+                v-slot:button="{ onClickButton }"
+              >
+                <v-icon
+                  aria-label="Éditer le waypoint"
+                  @click="onClickButton"
+                >
+                  mdi-pencil
+                </v-icon>
+              </template>
+            </WaypointButton>
             <v-icon
               class="text-error"
               @click="onDelete(waypoint)"
@@ -48,18 +59,20 @@
             <v-btn
               block
               @click="onAutoDetect"
-            >Auto detect climbs</v-btn>
+            >
+              Auto detect climbs
+            </v-btn>
           </v-col>
           <v-col cols="6">
-            <v-btn
-              block
-              @click="onAddWaypoint"
-            >Add waypoint</v-btn>
+            <WaypointButton
+              v-if="$props.gpxHelper"
+              :gpxHelper="$props.gpxHelper"
+              @update:model-value="onAddWaypoint"
+            />
           </v-col>
         </v-row>
       </v-list>
 
-      <!-- Bouton en bas, garde sa taille naturelle -->
       <div class="mt-2">
         <v-btn
           color="primary"
@@ -81,10 +94,14 @@ import GPXHelper from 'stage-profile-maker/src/classes/GPXHelper.ts';
 import type { Waypoint } from 'stage-profile-maker/src/interfaces/index.ts';
 
 import Panel from './Panel.vue';
+import WaypointButton from '../WaypointButton.vue';
 
 export default defineComponent({
   name: 'TrackPanel',
-  components: { Panel },
+  components: {
+    Panel,
+    WaypointButton
+  },
   props: {
     gpxHelper: {
       type: GPXHelper,
@@ -94,12 +111,22 @@ export default defineComponent({
   setup(props) {
     const waypoints = computed(() => props.gpxHelper?.getWaypoints() ?? {});
 
-    const onEdit = (distance: number) => {
-      console.log('Éditer le waypoint à', distance);
+    const onEdit = (oldValue: Waypoint, newValue: Waypoint) => {
+      if(!props.gpxHelper) {
+        console.error('GPXHelper is not defined');
+        return;
+      }
+
+      props.gpxHelper.deleteWaypoint(oldValue.lat, oldValue.lon);
+      props.gpxHelper.addWaypoint(newValue);
     };
 
     const onDelete = (waypoint: Waypoint) => {
-      props.gpxHelper?.deleteWaypoint(waypoint.lat, waypoint.lon);
+      if(!props.gpxHelper) {
+        console.error('GPXHelper is not defined');
+        return;
+      }
+      props.gpxHelper.deleteWaypoint(waypoint.lat, waypoint.lon);
     };
 
     const onAutoDetect = () => {
@@ -131,8 +158,13 @@ export default defineComponent({
       }
     };
 
-    const onAddWaypoint = () => {
-      console.log('Add waypoint');
+    const onAddWaypoint = (waypoint: Waypoint) => {
+      if(!props.gpxHelper) {
+        console.error('GPXHelper is not defined');
+        return;
+      }
+
+      props.gpxHelper.addWaypoint(waypoint);
     };
 
     const onDownload = () => {
