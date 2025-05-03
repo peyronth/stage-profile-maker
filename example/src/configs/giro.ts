@@ -1,12 +1,13 @@
 import type { Config } from 'stage-profile-maker/src/interfaces/index.ts';
 import { SprintTypes } from 'stage-profile-maker/src/enums/SprintTypes.ts';
+import { IconPosition, LabelPosition } from '../../../src/enums/SprintPositions';
 
 export const giroPreset: Config = {
   width: 1300,
   height: 400,
   topMargin: 400,
 
-  pointCount: 220,
+  pointCount: 1200,
 
   body: {
     color: '#FAF8EC',
@@ -36,6 +37,8 @@ export const giroPreset: Config = {
     color: '#000000'
   },
   start: {
+    labelPosition: LabelPosition.Body3D,
+    iconPosition: IconPosition.AfterLabel,
     color: "#000000",
     width: 6,
     policeForName: {
@@ -60,6 +63,8 @@ export const giroPreset: Config = {
     }
   },
   finish: {
+    labelPosition: LabelPosition.Body,
+    iconPosition: IconPosition.AfterLabel,
     color: "#000000",
     width: 6,
     policeForName: {
@@ -86,7 +91,9 @@ export const giroPreset: Config = {
   sprint: {
     color: "#000000",
     width: 2,
-    offset: 16,
+    offset: 32,
+    iconPosition: IconPosition.BodyBottom,
+    labelPosition: LabelPosition.Body3D,
     policeForName: {
       fontFamilly: "Arial",
       fontSize: 16,
@@ -155,11 +162,11 @@ export const giroPreset: Config = {
     rotation: 90
   },
   bottomDistance: {
+    rotation: 90,
     font: {
       fontFamilly: "Arial",
-      fontSize: 18,
-      fontColor: "#FEEC02",
-      fontWeight: "bold"
+      fontSize: 16,
+      fontColor: "#000000"
     }
   },
 }

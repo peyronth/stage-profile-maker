@@ -1,3 +1,4 @@
+import { IconPosition, LabelPosition } from '../enums/SprintPositions';
 import { SprintTypes } from '../enums/SprintTypes';
 
 export interface Config {
@@ -18,6 +19,7 @@ export interface Config {
   distanceGrid?: Grid;
 
   bottomDistance?: {
+    rotation?: number;
     backgroundColor?: string;
     font: Font;
   }
@@ -57,7 +59,10 @@ export interface Sprint extends Line {
   rotation: number;
   offset?: number;
   icons?: Partial<Record<SprintTypes, Icon>>;
+  iconPosition: IconPosition;
+  labelPosition: LabelPosition;
 }
+
 
 export interface StartFinish extends Sprint {
   name: string;

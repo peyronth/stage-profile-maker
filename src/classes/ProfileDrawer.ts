@@ -1,3 +1,4 @@
+import { IconPosition, LabelPosition } from '../enums/SprintPositions';
 import type { Config, Font, Grid, Icon, Line, ProfileBody, Sprint, StartFinish } from '../interfaces/Config';
 import GPXHelper from './GPXHelper';
 
@@ -12,6 +13,7 @@ export default class ProfileDrawer {
   topMargin: number;
   cssImported: boolean = false;
   pointCount: number;
+  offset3d: number[] = [0, 0];
 
   constructor(gpxHelper: GPXHelper) {
     this.gpx = gpxHelper;
@@ -158,30 +160,26 @@ export default class ProfileDrawer {
   }
 
   drawMarker(config: Sprint, name: string, distance: number, icon?: Icon): string {
-    const { fixToTop, policeForName, policeForAltitude, offset } = config;
+    const { fixToTop, policeForName, policeForAltitude, offset, iconPosition, labelPosition } = config;
 
-    const lineHeight = fixToTop ? '100%' : `calc(${this.getPointHeight(distance)} + ${offset ?? 0}px)`;
+    const mainLineOffset = labelPosition === LabelPosition.Body ? (offset ?? 0) : 0;
 
-    return `
-      <div style="
-        position: absolute;
-        left: ${distance / this.gpx.getDistance() * 100}%;
-        bottom: 0;
-        text-align: center;
-        height: 100%;
-      ">
+    const lineHeight = fixToTop ? '50%' : `calc(${this.getPointHeight(distance)} + ${mainLineOffset}px)`;
+    const marginLeft = labelPosition === LabelPosition.Body3D ? `${this.offset3d[0] / this.width * 100}%` : '0';
+
+    const iconAndLabel = `
         <div
           style="
-            margin-left: -100%;
+            width: 100%;
+            margin-left: ${marginLeft};
             display: flex;
             flex-direction: column;
             align-items: center;
-            height: 100%;
             justify-content: flex-end;
             gap: 8px;
           "
         >
-          ${icon ? this.drawIcon(icon) : ''}
+          ${(icon && iconPosition === IconPosition.AfterLabel) ? this.drawIcon(icon) : ''}
           <div style="
             writing-mode: vertical-lr;
             transform: rotate(180deg);
@@ -193,6 +191,34 @@ export default class ProfileDrawer {
           ">
             ${policeForAltitude ? this.drawWrite(policeForAltitude, `${this.gpx.getElevation(distance)}m`) : ''} ${this.drawWrite(policeForName, name)}
           </div>
+          ${(icon && iconPosition === IconPosition.BeforeLabel) ? this.drawIcon(icon) : ''}
+          ${offset && labelPosition === LabelPosition.Body3D ? this.drawLine({
+            ...config,
+          }, `${offset / (this.height * 2) *  100}%`) : ''}
+        </div>
+      `;
+
+    return `
+      <div style="
+        position: absolute;
+        left: ${distance / this.gpx.getDistance() * 100}%;
+        bottom: 0;
+        text-align: center;
+        width: 100%;
+        height: 100%;
+      ">
+        <div
+          style="
+            margin-left: -100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100%;
+            justify-content: flex-end;
+            gap: ${-this.offset3d[1] / (this.height * 2) * 100}%;
+          "
+        >
+          ${iconAndLabel}
           ${this.drawLine(config, lineHeight)}
         </div>
       </div>
@@ -253,7 +279,6 @@ export default class ProfileDrawer {
       style="
         margin-left: ${offset[0] / this.width * 100}%;
         width: ${100 - (offset[0] / this.width * 100)}%;
-        margin-top: ${offset[1] / this.width * 100}%;
         height: ${100 - (offset[1] / this.height * 100)}%;
       "
       viewBox="${offset[0]} ${0} ${this.width - offset[0]} ${this.height - offset[1]}"
@@ -315,6 +340,13 @@ export default class ProfileDrawer {
     this.pointCount = config.pointCount;
     this.xScale = this.width / this.gpx.getDistance();
     this.yScale = this.height / (this.gpx.getMaxAltitude() - this.getBottomAltitude());
+
+    if(config.body3D) {
+      this.offset3d = config.body3D.retreat;
+    }
+    else {
+      this.offset3d = [0, 0];
+    }
 
     if (!this.cssImported) {
       this.cssImported = true;
