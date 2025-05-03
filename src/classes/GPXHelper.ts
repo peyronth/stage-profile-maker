@@ -1,12 +1,14 @@
 import { Point, Waypoint } from '../interfaces/Gpx';
 import { autoDetectClimbs } from '../utils/climbs';
 import GPXMaker from './GPXMaker';
+import { getLocation } from '../utils/locations';
 
 export default class GPXHelper extends GPXMaker {
   constructor(gpxString: string) {
     super(gpxString);
   }
 
+  //#region Get
   getName(): string {
     if(this.metadata.name) {
       return this.metadata.name;
@@ -65,21 +67,6 @@ export default class GPXHelper extends GPXMaker {
     return 0;
   }
 
-  calculateDistanceBtw(lat1: number, lng1: number, lat2: number, lng2: number): number {
-    const R = 6371e3; // metres
-    const φ1 = lat1 * Math.PI / 180; // φ, λ in radians
-    const φ2 = lat2 * Math.PI / 180;
-    const Δφ = (lat2 - lat1) * Math.PI / 180;
-    const Δλ = (lng2 - lng1) * Math.PI / 180;
-
-    const a = Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
-      Math.cos(φ1) * Math.cos(φ2) *
-      Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-
-    return R * c; // in metres
-  }
-
   getDistanceAtPoint(lat: number, lon: number): number {
     const sortedPoints = this.getPoints().toSorted((a, b) => {
       return this.calculateDistanceBtw(lat, lon, a.lat, a.lon) - this.calculateDistanceBtw(lat, lon, b.lat, b.lon);
@@ -100,10 +87,6 @@ export default class GPXHelper extends GPXMaker {
     return distWaypoints;
   }
 
-  addWaypoint(waypoint: Waypoint) {
-    this.waypoints.push(waypoint);
-  }
-
   getPointAtDistance(distance: number): Point {
     const points = this.getPoints();
     const point = points.find(p => p.dist >= distance);
@@ -113,22 +96,67 @@ export default class GPXHelper extends GPXMaker {
     return points[points.length - 1];
   }
 
+  async getStartLocation(): Promise<string> {
+    const startPoint = this.getPointAtDistance(0);
+    const lat = startPoint.lat;
+    const lon = startPoint.lon;
+    const location = await getLocation(lat, lon);
+    return location;
+  }
+
+  async getEndLocation(): Promise<string> {
+    const allPoints = this.getPoints();
+    const endPoint = allPoints[allPoints.length - 1];
+    const lat = endPoint.lat;
+    const lon = endPoint.lon;
+    const location = await getLocation(lat, lon);
+    return location;
+  }
+  //#endregion
+
+  //#region Add
+  addWaypoint(waypoint: Waypoint) {
+    this.waypoints.push(waypoint);
+  }
+  //#endregion
+
+  //#region Set - Update - Edit
   setName(name: string) {
     this.metadata.name = name;
   }
+  //#endregion
   
+  //#region Remove
+  deleteWaypoint(lat: number, lon: number) {
+    this.waypoints = this.waypoints.filter(waypoint => waypoint.lat !== lat && waypoint.lon !== lon);
+  }
+  //#endregion
+  
+  //#region Miscellaneous
   autoDetectClimbs() {
     const detectedClimbs = autoDetectClimbs(this.tracks[0].slopes);
     
     return detectedClimbs;
   }
 
-  deleteWaypoint(lat: number, lon: number) {
-    this.waypoints = this.waypoints.filter(waypoint => waypoint.lat !== lat && waypoint.lon !== lon);
+  calculateDistanceBtw(lat1: number, lng1: number, lat2: number, lng2: number): number {
+    const R = 6371e3; // metres
+    const φ1 = lat1 * Math.PI / 180; // φ, λ in radians
+    const φ2 = lat2 * Math.PI / 180;
+    const Δφ = (lat2 - lat1) * Math.PI / 180;
+    const Δλ = (lng2 - lng1) * Math.PI / 180;
+
+    const a = Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
+      Math.cos(φ1) * Math.cos(φ2) *
+      Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+    return R * c; // in metres
   }
 
   exportGPX(): string {
     const gpx = this.generateGpx();
     return gpx;
   }
+  //#endregion
 }

@@ -55,7 +55,7 @@ export const giroPreset: Config = {
     },
     fixToTop: false,
     rotation: 90,
-    name: "Marseille",
+    name: "",
     icon: {
       src: "/stage-profile-maker/icons/tour/tour_start.png",
       width: 28,
@@ -81,7 +81,7 @@ export const giroPreset: Config = {
     },
     fixToTop: false,
     rotation: 90,
-    name: "Marseille",
+    name: "",
     icon: {
       src: "/stage-profile-maker/icons/tour/tour_start.png",
       width: 28,

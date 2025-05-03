@@ -186,10 +186,14 @@ export default class GPXParser {
     let totalDistance = 0;
     let cumulDistance = [];
     for (let i = 0; i < points.length - 1; i++) {
-      totalDistance += this.calcDistanceBetween(points[i], points[i + 1]);
-      cumulDistance[i] = totalDistance;
       points[i].dist = totalDistance;
+      cumulDistance[i] = totalDistance;
+      totalDistance += this.calcDistanceBetween(points[i], points[i + 1]);
     }
+    points[points.length - 1].dist = totalDistance;
+    cumulDistance[points.length - 1] = totalDistance;
+    // 
+
     cumulDistance[points.length - 1] = totalDistance;
 
     distance.total = totalDistance;

@@ -8,4 +8,4 @@ export const presets: Record<string, Config> = {
   'giro': giroPreset
 }
 
-export const defaultPreset = giroPreset;
+export const defaultPreset = tourPreset;

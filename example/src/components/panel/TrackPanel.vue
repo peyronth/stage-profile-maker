@@ -11,23 +11,23 @@
 
       <v-list class="pa-2">
         <v-list-item
-          v-for="(waypoint, distance) in waypoints"
-          :key="distance"
+          v-for="waypointObj in waypoints"
+          :key="waypointObj.distance"
         >
           <v-list-item-title>
-            {{ waypoint.name }}
+            {{ waypointObj.waypoint.name }}
           </v-list-item-title>
           <v-list-item-subtitle>
-            {{ (distance / 1000).toFixed(2) }} km — {{ waypoint.ele || $props.gpxHelper?.getElevation(distance) }} m
+            {{ (waypointObj.distance / 1000).toFixed(2) }} km — {{ waypointObj.waypoint.ele || $props.gpxHelper?.getElevation(waypointObj.distance) }} m
           </v-list-item-subtitle>
 
           <template v-slot:append>
             <WaypointButton
               v-if="$props.gpxHelper"
               :gpxHelper="$props.gpxHelper"
-              :model-value="waypoint"
-              @update:model-value="onEdit(waypoint, $event)"
-              @delete="onDelete(waypoint)"
+              :model-value="waypointObj.waypoint"
+              @update:model-value="onEdit(waypointObj.waypoint, $event)"
+              @delete="onDelete(waypointObj.waypoint)"
             >
               <template
                 v-slot:button="{ onClickButton }"
@@ -42,7 +42,7 @@
             </WaypointButton>
             <v-icon
               class="text-error"
-              @click="onDelete(waypoint)"
+              @click="onDelete(waypointObj.waypoint)"
               aria-label="Supprimer le waypoint"
             >
               mdi-delete
@@ -109,7 +109,17 @@ export default defineComponent({
     }
   },
   setup(props) {
-    const waypoints = computed(() => props.gpxHelper?.getWaypoints() ?? {});
+    const waypoints = computed(() => {
+      const rawWaypoints = props.gpxHelper?.getWaypoints() ?? {};
+
+      return Object.keys(rawWaypoints)
+        .map((distanceStr) => {
+          const distance = Number(distanceStr);
+          const waypoint = rawWaypoints[distance];
+          return { distance, waypoint };
+        })
+        .sort((a, b) => a.distance - b.distance);
+  });
 
     const onEdit = (oldValue: Waypoint, newValue: Waypoint) => {
       if(!props.gpxHelper) {

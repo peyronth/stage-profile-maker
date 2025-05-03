@@ -12,12 +12,12 @@
   </TrackPanel>
   <ProfileShow
     :profileMaker="profileMaker"
-    v-model:config="style"
+    v-model:config="config"
   />
   <StylePanel
     side="right"
     :width="550"
-    v-model="style"
+    v-model="config"
   />
 </template>
 
@@ -43,18 +43,21 @@ export default defineComponent({
     }
   },
   setup(props) {
-    const style = ref(defaultPreset);
+    const config = ref(defaultPreset);
     const profileMaker = ref<ProfileMaker>();
 
-    watch(() => props.gpx, () => {
+    watch(() => props.gpx, async () => {
       if(!props.gpx) return;
 
       profileMaker.value = new ProfileMaker(props.gpx);
+
+      config.value.start.name = await profileMaker.value.gpx.getStartLocation();
+      config.value.finish.name = await profileMaker.value.gpx.getEndLocation();
     }, { immediate: true });
 
     return {
       profileMaker,
-      style
+      config
     };
   },
 });

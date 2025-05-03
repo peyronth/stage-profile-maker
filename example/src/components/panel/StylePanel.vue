@@ -10,7 +10,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue';
+import { defineComponent, ref, type PropType } from 'vue';
 
 import type { Config } from 'stage-profile-maker/src/interfaces/index.ts';
 
@@ -26,7 +26,10 @@ export default defineComponent({
     SelectProfilePreset
   },
   props: {
-    modelValue: Object
+    modelValue: {
+      type: Object as PropType<Config>,
+      required: true
+    }
   },
   emits: ['update:model-value'],
   setup(_props, { emit }) {
