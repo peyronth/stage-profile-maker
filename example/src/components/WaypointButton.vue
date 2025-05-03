@@ -17,7 +17,7 @@
     <v-card
       max-width="800"
       prepend-icon="mdi-map-marker-circle"
-      title="Waypoint informations"
+      title="Waypoint information"
     >
     <v-sheet class="mx-auto pa-4" width="500">
       <v-form

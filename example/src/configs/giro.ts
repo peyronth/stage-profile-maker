@@ -83,7 +83,7 @@ export const giroPreset3d: Config = {
     rotation: 90,
     name: "",
     icon: {
-      src: "/stage-profile-maker/icons/giro/giro_start.png",
+      src: "/stage-profile-maker/icons/giro/giro_finish.png",
       width: 28,
       height: 28
     }

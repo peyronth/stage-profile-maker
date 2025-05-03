@@ -8,7 +8,7 @@ export const presets: Record<string, Config> = {
   'Tour de France v1': tourPreset,
   'Giro d\'Italie v1': giroPresets[1],
   'Giro d\'Italie v2': giroPresets[0],
-  'Pais Nice v1': parisNicePreset,
+  'Paris Nice v1': parisNicePreset,
 }
 
 export const defaultPreset = parisNicePreset;
