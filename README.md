@@ -85,4 +85,4 @@ We welcome contributions! Please follow these basic rules:
 
 ## 📝 License
 
-[MIT](LICENSE)
+[GNU](LICENSE)

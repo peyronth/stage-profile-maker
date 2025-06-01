@@ -25,25 +25,35 @@
               indeterminate
               color="primary"
             />
-            <BasicInformationsButton
-              v-else-if="$props.config"
+            <template
+              v-else
+            >
+              <BasicInformationsButton
+              v-if="$props.config"
               :config="$props.config"
               :trackName="gpxHelper.getName()"
               @update:config="onNewConfig"
               @update:trackName="onNewTrackName"
             />
+            <ExportButton
+              v-if="profileContainer"
+              :element="profileContainer"
+            />
+            </template>
+            
           </v-col>
       </v-row>
     </v-card>
     <div
       class="profile-container"
+      ref="profileContainer"
       v-html="profileHtml"
     />
   </v-container>
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, watch, type PropType } from 'vue';
+import { computed, defineComponent, ref, watch, type PropType } from 'vue';
 
 import { useProfileHtml } from '../composables/useProfileHtml';
 
@@ -51,10 +61,12 @@ import { ProfileMaker } from 'stage-profile-maker';
 import type { Config } from 'stage-profile-maker/src/interfaces/index.ts';
 
 import BasicInformationsButton from './BasicInformationsButton.vue';
+import ExportButton from './ExportButton.vue';
 
 export default defineComponent({
   name: 'ProfileShow',
   components: {
+    ExportButton,
     BasicInformationsButton
   },
   props: {
@@ -68,6 +80,8 @@ export default defineComponent({
   emits: ['update:config'],
   setup(props, { emit }) {
     const { loading, html: profileHtml, getHtml } = useProfileHtml();
+
+    const profileContainer = ref<HTMLElement | null>(null);
 
     const gpxHelper = computed(() => {
       return props.profileMaker?.gpx;
@@ -98,6 +112,7 @@ export default defineComponent({
       loading,
       gpxHelper,
       profileHtml,
+      profileContainer,
       onNewConfig,
       onNewTrackName
     };
